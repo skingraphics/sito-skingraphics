@@ -369,7 +369,7 @@ function init(){
 topoAnim();
 gsap.registerPlugin(ScrollTrigger);
 const LE='power4.inOut';const mobile=matchMedia('(max-width:900px)').matches;const $=s=>document.querySelector(s);
-let lenis;try{if(FX.smooth_scroll!==false&&window.Lenis){lenis=new Lenis({lerp:+FX.smooth_lerp||.08});lenis.on('scroll',ScrollTrigger.update);gsap.ticker.add(t=>lenis.raf(t*1000));gsap.ticker.lagSmoothing(0)}}catch(e){}
+let lenis;try{if(FX.smooth_scroll!==false&&window.Lenis){lenis=new Lenis({lerp:+FX.smooth_lerp||.07,wheelMultiplier:FX.scroll_speed==null?.7:+FX.scroll_speed,touchMultiplier:1.2});lenis.on('scroll',ScrollTrigger.update);gsap.ticker.add(t=>lenis.raf(t*1000));gsap.ticker.lagSmoothing(0)}}catch(e){}
 const jump=t=>{lenis?lenis.scrollTo(t,{immediate:true,force:true}):t.scrollIntoView();ScrollTrigger.update()};
 let busy=false;const cur=$('#curtain'),cls=cur?[...cur.querySelectorAll('.cl')]:[];
 function transition(mid){ // tenda rossa + nera che sale, cambio "pagina", tenda che esce in alto
@@ -486,8 +486,9 @@ if($('#heroBg')){
 /* HERO scroll */
 if($('#hero')){
  const sp=$('#signPath');const L=sp.getTotalLength?sp.getTotalLength():2000;gsap.set(sp,{strokeDasharray:L,strokeDashoffset:FX.signature_draw===false?0:L});if(FX.signature_draw===false)sp.style.display='none';
- const ht=gsap.timeline({scrollTrigger:{trigger:'#hero',start:'top top',end:'+='+(+FX.hero_scroll_length||2800),pin:true,scrub:1,
+ const ht=gsap.timeline({scrollTrigger:{trigger:'#hero',start:'top top',end:'+='+(+FX.hero_scroll_length||2800),pin:true,scrub:1,snap:FX.scroll_snap===false?false:{snapTo:'labelsDirectional',duration:{min:.5,max:1.2},delay:.12,ease:'power2.inOut'},
   onUpdate:s=>{H.active=s.progress<.55;$('#monoLbl').style.opacity=s.progress>.3&&s.progress<.95?1:0}}});
+ ht.addLabel('inizio',0).addLabel('card',1.3).addLabel('firma',3.0);
  ht.to('#heroCard',{clipPath:mobile?'inset(24% 10% 24% 10%)':'inset(24% 32% 24% 32%)',duration:1.2,ease:LE},0)
   .to('.ticket,.hint,.corner',{opacity:0,duration:.3},0).to('#mqw',{opacity:1,duration:.4},.5)
   .fromTo('#mq1',{xPercent:5},{xPercent:-45,duration:3,ease:'none'},.4).fromTo('#mq2',{xPercent:-45},{xPercent:5,duration:3,ease:'none'},.4)
@@ -497,6 +498,13 @@ if($('#hero')){
   .to('#heroCard,#sign,#msgLbl',{opacity:0,duration:.5},3.1)
   .fromTo('#hero',{backgroundColor:'rgba(22,22,22,0)'},{backgroundColor:FX.hero_scroll_bg||'#3d0709',duration:2.2,ease:'power1.in'},.6).to('#hero',{backgroundColor:'rgba(22,22,22,0)',duration:.6},3.2).to('#mqw',{opacity:0,duration:.4},3.2);
 }
+
+/* MAGNETE: fermando lo scroll vicino all'inizio di una sezione, la pagina si allinea da sola (così chi scorre veloce non salta i contenuti) */
+if(FX.scroll_snap!==false&&lenis){let tm=null,snapping=false;
+ const targets=()=>[...document.querySelectorAll('#manifesto,#gioco,.fullbleed,#hof,#skincms,.partners,.social,#footer')];
+ lenis.on('scroll',()=>{if(snapping)return;clearTimeout(tm);tm=setTimeout(()=>{if(ScrollTrigger.isScrolling&&ScrollTrigger.isScrolling())return;
+  let best=null,bd=1e9;for(const el of targets()){const d=el.getBoundingClientRect().top;if(Math.abs(d)<innerHeight*.28&&Math.abs(d)<bd){bd=Math.abs(d);best=el}}
+  if(best&&bd>4){snapping=true;lenis.scrollTo(best,{duration:.9,easing:t=>1-Math.pow(1-t,3),onComplete:()=>setTimeout(()=>snapping=false,80)});setTimeout(()=>snapping=false,1300)}},180)})}
 
 /* MANIFESTO */
 if($('#stmt')){
