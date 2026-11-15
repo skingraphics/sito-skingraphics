@@ -66,6 +66,24 @@ body.ondark-logo .wm img{filter:none}
 .ticket .badge{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
 .ticket .badge b{font-size:26px;font-family:var(--serif)}
 .hint{position:absolute;right:18px;bottom:18px;color:var(--ink);z-index:4;text-align:right}
+/* apertura scura con sfondo dinamico */
+.hero-bg{position:absolute;inset:0;overflow:hidden;background:var(--ink)}
+.hero-bg .glow{position:absolute;left:0;top:0;width:70vmax;height:70vmax;margin:-35vmax 0 0 -35vmax;border-radius:50%;background:radial-gradient(circle,var(--red) 0%,rgba(227,30,36,.35) 32%,rgba(227,30,36,0) 68%);filter:blur(30px);mix-blend-mode:screen;will-change:transform,opacity}
+.hero-bg .glow.g2{width:52vmax;height:52vmax;margin:-26vmax 0 0 -26vmax;background:radial-gradient(circle,#7a0d10 0%,rgba(122,13,16,.4) 40%,rgba(122,13,16,0) 70%)}
+.hero-bg .glow.g3{width:38vmax;height:38vmax;margin:-19vmax 0 0 -19vmax;background:radial-gradient(circle,rgba(255,90,60,.55) 0%,rgba(255,90,60,0) 65%)}
+.hero-bg .vig{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 40%,rgba(0,0,0,.65) 100%)}
+.hero-bg .grain{position:absolute;inset:-50%;opacity:.09;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain .9s steps(4) infinite}
+@keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-4%,3%)}50%{transform:translate(3%,-5%)}75%{transform:translate(-2%,-3%)}100%{transform:translate(4%,2%)}}
+#hero.dark .ticket,#hero.dark .hint{color:var(--fog);border-color:rgba(230,226,219,.5)}
+#hero.dark .ticket .tab{background:var(--ink);border-color:rgba(230,226,219,.5)}
+#hero.dark .ticket hr{border-color:rgba(230,226,219,.35)}
+#hero.dark .ticket svg{stroke:var(--fog)}
+/* transizione di pagina (come Lando Norris) */
+#curtain{position:fixed;inset:0;z-index:190;pointer-events:none;visibility:hidden}
+#curtain .cl{position:absolute;inset:0;clip-path:inset(100% 0 0 0)}
+#curtain .c1{background:var(--red)}
+#curtain .c2{background:var(--ink);display:flex;align-items:center;justify-content:center}
+#curtain .c2 img{height:min(14vw,110px);width:auto}
 /* marquee dietro la card */
 .msg-label{position:absolute;left:50%;top:76px;transform:translateX(-50%);z-index:5;text-align:center;opacity:0}
 .mq-wrap{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);z-index:0;pointer-events:none;opacity:0}
@@ -174,7 +192,7 @@ footer{padding:18px;background:radial-gradient(circle at 50% -190%,rgba(227,30,3
 
 .notopo .topoD,.notopo .topoL,.topoanim .topoD,.topoanim .topoL{background-image:none!important}
 #topo{position:fixed;inset:0;width:100%;height:100%;z-index:60;pointer-events:none;mix-blend-mode:difference}
-#boot{position:fixed;inset:0;z-index:200;background:var(--ink);display:flex;align-items:center;justify-content:center;transition:opacity .6s}
+#boot{position:fixed;inset:0;z-index:200;clip-path:inset(0% 0% 0% 0%);background:var(--ink);display:flex;align-items:center;justify-content:center;transition:opacity .6s}
 #boot svg{height:56px;animation:pulse 1s ease-in-out infinite alternate}
 @keyframes pulse{to{opacity:.3}}
 .logos span img{max-height:36px;width:auto}
@@ -189,6 +207,7 @@ footer{padding:18px;background:radial-gradient(circle at 50% -190%,rgba(227,30,3
 </div>
 <div id="menu"><div id="menuLinks"></div><div class="side cap" id="menuSide"></div></div>
 <canvas id="topo"></canvas>
+<div id="curtain"><div class="cl c1"></div><div class="cl c2"><img src="img/logo-neg.svg" alt=""></div></div>
 <main id="main"></main>
 <footer id="footer"></footer>
 
@@ -215,12 +234,12 @@ const src=u=>esc(u||'');
 
 /* =================== RENDER SEZIONI =================== */
 const R={
- hero:d=>`<section id="hero" class="topoD">
+ hero:d=>`<section id="hero" class="topoD${d.bg_mode==='chiaro'?'':' dark'}">
   <div class="mq-wrap" id="mqw"><div class="mq-line s1" id="mq1">${(esc(d.marquee_serif)+' · ').repeat(4)}</div><div class="mq-line s2" id="mq2">${(esc(d.marquee_sans)+' · ').repeat(3)}</div></div>
-  <div class="hero-card" id="heroCard"><div class="cream-bg cream topoL"></div><canvas id="bang"></canvas>
+  <div class="hero-card" id="heroCard">${d.bg_mode==='chiaro'?'<div class="cream-bg cream topoL"></div>':'<div class="hero-bg" id="heroBg"><div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div><div class="vig"></div><div class="grain"></div></div>'}<canvas id="bang"></canvas>
    <div class="hero-photo" id="heroPhoto"><img src="${src(d.photo)}" alt=""></div>
    <div class="ticket cap" id="ticket"><span class="tab">${esc(d.ticket_tab)}</span>
-    <svg viewBox="0 0 140 46" fill="none" stroke="#161616" stroke-width="1.4"><rect x="2" y="4" width="136" height="38" rx="4"/><rect x="10" y="10" width="36" height="26"/><rect x="52" y="10" width="36" height="26"/><rect x="94" y="10" width="36" height="26"/><g fill="var(--red)" stroke="none" font-family="Arial" font-weight="700" font-size="18"><text x="22" y="30">7</text><text x="64" y="30">7</text><text x="106" y="30">7</text></g></svg>
+    <svg viewBox="0 0 140 46" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="4" width="136" height="38" rx="4"/><rect x="10" y="10" width="36" height="26"/><rect x="52" y="10" width="36" height="26"/><rect x="94" y="10" width="36" height="26"/><g fill="var(--red)" stroke="none" font-family="Arial" font-weight="700" font-size="18"><text x="22" y="30">7</text><text x="64" y="30">7</text><text x="106" y="30">7</text></g></svg>
     <div>${esc(d.ticket_text)}</div><hr><div class="badge"><b>!</b>${esc(d.ticket_badge)}</div></div>
    <div class="hint cap">${esc(d.hint)}</div></div>
   <div class="msg-label cap" id="msgLbl">${esc(d.message_label)}</div>
@@ -278,7 +297,7 @@ let S={},FX={};
   document.getElementById('menuLinks').innerHTML=secs.filter(r=>MENU[r.key]).map(r=>`<a class="big up sans" href="${ANCH[r.key]}"><span>${MENU[r.key]}</span></a>`).join('')+'<a class="big up sans" href="#footer"><span>Contatti</span></a>';
   const fd=(by.footer||{}).data||{};document.getElementById('menuSide').innerHTML=`${esc(fd.legal||'')}<br>${esc(fd.phone||'')} · ${esc(fd.email||'')}`;
   document.fonts&&await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]);
-  init();const b=document.getElementById('boot');b.style.opacity=0;setTimeout(()=>b.remove(),700);
+  init();const b=document.getElementById('boot');if(window.gsap&&FX.page_transition!==false){b.style.transition='none';gsap.to(b,{clipPath:'inset(0% 0% 100% 0%)',duration:1.1,ease:'expo.inOut',delay:.15,onComplete:()=>b.remove()})}else{b.style.opacity=0;setTimeout(()=>b.remove(),700)}
 })();
 
 
@@ -328,10 +347,22 @@ topoAnim();
 gsap.registerPlugin(ScrollTrigger);
 const LE='power4.inOut';const mobile=matchMedia('(max-width:900px)').matches;const $=s=>document.querySelector(s);
 let lenis;try{if(FX.smooth_scroll!==false&&window.Lenis){lenis=new Lenis({lerp:+FX.smooth_lerp||.08});lenis.on('scroll',ScrollTrigger.update);gsap.ticker.add(t=>lenis.raf(t*1000));gsap.ticker.lagSmoothing(0)}}catch(e){}
-const go=sel=>{const t=$(sel);if(!t)return;lenis?lenis.scrollTo(t,{duration:1.8}):t.scrollIntoView({behavior:'smooth'})};
+const jump=t=>{lenis?lenis.scrollTo(t,{immediate:true,force:true}):t.scrollIntoView();ScrollTrigger.update()};
+let busy=false;const cur=$('#curtain'),cls=cur?[...cur.querySelectorAll('.cl')]:[];
+function transition(mid){ // tenda rossa + nera che sale, cambio "pagina", tenda che esce in alto
+ if(busy)return;busy=true;cur.style.visibility='visible';cur.style.pointerEvents='auto';
+ gsap.timeline({onComplete:()=>{busy=false;cur.style.visibility='hidden';cur.style.pointerEvents='none'}})
+  .set(cls,{clipPath:'inset(100% 0% 0% 0%)'}).set(cur.querySelector('img'),{yPercent:60,opacity:0})
+  .to(cls,{clipPath:'inset(0% 0% 0% 0%)',duration:.8,ease:'expo.inOut',stagger:.12})
+  .to(cur.querySelector('img'),{yPercent:0,opacity:1,duration:.5,ease:'expo.out'},'-=.25')
+  .add(()=>mid&&mid()).to({},{duration:.35})
+  .to(cur.querySelector('img'),{yPercent:-60,opacity:0,duration:.4,ease:'expo.in'})
+  .to([...cls].reverse(),{clipPath:'inset(0% 0% 100% 0%)',duration:.8,ease:'expo.inOut',stagger:.1},'-=.15');
+}
+const go=sel=>{const t=$(sel);if(!t)return;if(FX.page_transition===false||!cur){lenis?lenis.scrollTo(t,{duration:1.8}):t.scrollIntoView({behavior:'smooth'});return}transition(()=>jump(t))};
 const wm=$('#wm');const logo=S.logo||{};
 function theme(light){document.body.classList.toggle('onlight',light);wm.src=light?(logo.light||'img/logo.svg'):(logo.dark||'img/logo-neg.svg')}
-theme(!!$('#hero'));
+const heroLight=!!$('#hero')&&!$('#hero.dark');theme(heroLight);
 document.querySelectorAll('section.cream').forEach(s=>ScrollTrigger.create({trigger:s,start:'top 60px',end:'bottom 60px',onToggle:st=>{if(st.isActive)theme(true)},onLeave:()=>theme(false),onLeaveBack:()=>theme(false)}));
 
 /* HERO 3D */
@@ -343,14 +374,14 @@ if($('#hero')&&FX.hero_3d!==false&&window.THREE)(function(){
  function size(){const w=cv.clientWidth||innerWidth,h=cv.clientHeight||innerHeight;r.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}size();addEventListener('resize',size);
  const col=getComputedStyle(document.documentElement).getPropertyValue('--red').trim()||'#e31e24';
  const red=new THREE.MeshPhysicalMaterial({color:new THREE.Color(col),roughness:.22,metalness:.1,clearcoat:1,clearcoatRoughness:.12});
- const black=new THREE.MeshPhysicalMaterial({color:0x161616,roughness:.3,metalness:.55,clearcoat:1});
+ const dk=!!$('#hero.dark');const black=new THREE.MeshPhysicalMaterial({color:dk?0x3a3a3a:0x161616,roughness:.3,metalness:dk?.75:.55,clearcoat:1});
  const k=.1,W=9.4*k,D=1.1,top=(31+3.7+7.6)/2*k,n=6,bh=31*k/n,parts=[];
  for(let i=0;i<n;i++)parts.push({y:top-bh*(i+1),h:bh-.025});parts.push({y:top-31*k-3.7*k-7.6*k,h:7.6*k});
  const root=new THREE.Group(),bang=new THREE.Group();root.add(bang);scene.add(root);const pieces=[];
  parts.forEach(p=>{const sh=new THREE.Shape();sh.moveTo(-W/2,0);sh.lineTo(W/2,0);sh.lineTo(W/2,p.h);sh.lineTo(-W/2,p.h);sh.lineTo(-W/2,0);
   const geo=new THREE.ExtrudeGeometry(sh,{depth:D,bevelEnabled:true,bevelThickness:.05,bevelSize:.03,bevelSegments:3});geo.translate(0,0,-D/2);
   const m=new THREE.Mesh(geo,[red,black]);m.userData.fy=p.y;m.position.set((Math.random()-.5)*9,p.y+(Math.random()-.5)*7,(Math.random()-.5)*8);m.rotation.set(Math.random()*4,Math.random()*4,Math.random()*2);bang.add(m);pieces.push(m)});
- const wmat=new THREE.LineBasicMaterial({color:0x161616,transparent:true,opacity:0});
+ const wmat=new THREE.LineBasicMaterial({color:dk?0xe6e2db:0x161616,transparent:true,opacity:0});
  const wb=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(W+.08,31*k,D+.08)),wmat);wb.position.y=top-31*k/2;bang.add(wb);
  const wd=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(W+.08,7.6*k,D+.08)),wmat);wd.position.y=parts[n].y+7.6*k/2;bang.add(wd);
  bang.scale.setScalar(mobile?1:1.15);
@@ -363,11 +394,25 @@ if($('#hero')&&FX.hero_3d!==false&&window.THREE)(function(){
  (function loop(t){requestAnimationFrame(loop);if(!H.active)return;root.rotation.y+=((mx*.9+Math.sin((t||0)/2500)*.25)-root.rotation.y)*.06;root.rotation.x+=((my*.4)-root.rotation.x)*.06;r.render(scene,cam)})();
 })();
 
+/* SFONDO DINAMICO APERTURA: bagliori rossi che si muovono e seguono il mouse */
+if($('#heroBg')){
+ const bg=$('#heroBg');const gl=[...bg.querySelectorAll('.glow')];
+ if(FX.hero_glow===false)gl.forEach(g=>g.remove());else{
+ const sp=FX.hero_glow_speed==null?1:+FX.hero_glow_speed,it=FX.hero_glow_intensity==null?.6:+FX.hero_glow_intensity;
+ gl.forEach(g=>g.style.opacity=Math.min(1,it));
+ let gx=.5,gy=.5,tx=.5,ty=.5;addEventListener('pointermove',e=>{tx=e.clientX/innerWidth;ty=e.clientY/innerHeight});
+ const P=[[.30,.35,.13,.11,0],[.72,.62,.09,.15,2],[.55,.45,.17,.07,4]];
+ (function loop(t){requestAnimationFrame(loop);if(!H.active)return;t=(t||0)/1000*sp;gx+=(tx-gx)*.03;gy+=(ty-gy)*.03;
+  const W=innerWidth,Hh=innerHeight;
+  gl.forEach((g,i)=>{const p=P[i];const x=(p[0]+Math.sin(t*p[2]*3+p[4])*.22+(gx-.5)*(.25+i*.12))*W,y=(p[1]+Math.cos(t*p[3]*3+p[4])*.2+(gy-.5)*(.2+i*.1))*Hh;
+   const s=1+Math.sin(t*.6+p[4])*.12;g.style.transform=`translate3d(${x}px,${y}px,0) scale(${s})`})})();}
+}
+
 /* HERO scroll */
 if($('#hero')){
  const sp=$('#signPath');const L=sp.getTotalLength?sp.getTotalLength():2000;gsap.set(sp,{strokeDasharray:L,strokeDashoffset:FX.signature_draw===false?0:L});if(FX.signature_draw===false)sp.style.display='none';
  const ht=gsap.timeline({scrollTrigger:{trigger:'#hero',start:'top top',end:'+='+(+FX.hero_scroll_length||2800),pin:true,scrub:1,
-  onUpdate:s=>{theme(s.progress<.12);H.active=s.progress<.55;$('#monoLbl').style.opacity=s.progress>.3&&s.progress<.95?1:0}}});
+  onUpdate:s=>{theme(heroLight&&s.progress<.12);H.active=s.progress<.55;$('#monoLbl').style.opacity=s.progress>.3&&s.progress<.95?1:0}}});
  ht.to('#heroCard',{clipPath:mobile?'inset(24% 10% 24% 10%)':'inset(24% 32% 24% 32%)',duration:1.2,ease:LE},0)
   .to('.ticket,.hint',{opacity:0,duration:.3},0).to('#mqw',{opacity:1,duration:.4},.5)
   .fromTo('#mq1',{xPercent:5},{xPercent:-45,duration:3,ease:'none'},.4).fromTo('#mq2',{xPercent:-45},{xPercent:5,duration:3,ease:'none'},.4)
@@ -421,7 +466,7 @@ gsap.from('.fcols>*',{y:50,opacity:0,stagger:.08,duration:.75,ease:LE,scrollTrig
 /* MENU */
 let open=false,prevLight;const mt=gsap.timeline({paused:true}).to('#menu',{clipPath:'inset(0 0 0% 0)',duration:.75,ease:LE}).from('#menu a.big span',{yPercent:110,stagger:.05,duration:.6,ease:'expo.out'},'-=.3');
 $('#sq').onclick=()=>{open=!open;if(open){prevLight=document.body.classList.contains('onlight');theme(false);mt.play()}else{mt.reverse();theme(prevLight)}};
-document.querySelectorAll('#menu a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();open=false;mt.reverse();setTimeout(()=>go(a.getAttribute('href')),350)}));
+document.querySelectorAll('#menu a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();open=false;const h=a.getAttribute('href');if(FX.page_transition===false){mt.reverse();setTimeout(()=>go(h),350)}else{go(h);setTimeout(()=>{mt.progress(0).pause()},1000)}}));
 document.querySelectorAll('a[href^="#"]:not(#menu a)').forEach(a=>a.addEventListener('click',e=>{const h=a.getAttribute('href');if(h.length<2)return;e.preventDefault();go(h)}));
 ScrollTrigger.refresh();addEventListener('load',()=>ScrollTrigger.refresh());
 }
