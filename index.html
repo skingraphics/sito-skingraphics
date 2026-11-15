@@ -60,7 +60,7 @@ body.ondark-logo .wm img{filter:none}
 .hchar{position:absolute;inset:0;z-index:2;overflow:hidden}
 .hchar img,.hchar video{position:absolute;inset:-3%;width:106%;height:106%;object-fit:cover;will-change:transform;mix-blend-mode:screen}
 .hchar canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair}
-.hero-photo{position:absolute;inset:24% 32%;opacity:0;z-index:3}
+.hero-photo{position:absolute;inset:24% 32%;opacity:0;z-index:3;pointer-events:none}
 @media (max-width:900px){.hero-photo{inset:24% 10%}}
 .hero-photo img{width:100%;height:100%;object-fit:cover;object-position:center 22%;filter:grayscale(1) contrast(1.1) brightness(.9)}
 .hero-photo:after{content:"";position:absolute;inset:0;background:var(--ink);mix-blend-mode:color;opacity:.35}
@@ -429,9 +429,9 @@ if($('#hchar'))(function(){
  let pts=[],tx=-999,ty=-999,lx=null,ly=null,over=false,t0=0,lastT=0;
  function sizeTr(){tr.width=W*dpr;tr.height=Hh*dpr;tx2.setTransform(dpr,0,0,dpr,0,0)}
  const mv=(x,y)=>{const b=wrap.getBoundingClientRect();tx=x-b.left;ty=y-b.top;over=true};
- wrap.addEventListener('pointermove',e=>mv(e.clientX,e.clientY));wrap.addEventListener('pointerleave',()=>{over=false;lx=null});
- wrap.addEventListener('touchmove',e=>{const t=e.touches[0];if(t)mv(t.clientX,t.clientY)},{passive:true});
- wrap.addEventListener('touchend',()=>{over=false;lx=null});
+ addEventListener('pointermove',e=>{const b=wrap.getBoundingClientRect();if(e.clientX<b.left||e.clientX>b.right||e.clientY<b.top||e.clientY>b.bottom){over=false;lx=null;return}mv(e.clientX,e.clientY)});document.addEventListener('pointerleave',()=>{over=false;lx=null});
+ addEventListener('touchmove',e=>{const t=e.touches[0];if(t)mv(t.clientX,t.clientY)},{passive:true});
+ addEventListener('touchend',()=>{over=false;lx=null});
  const dab=(x,y,r)=>{const g=tx2.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,'rgba(0,0,0,1)');g.addColorStop(.55,'rgba(0,0,0,.85)');g.addColorStop(1,'rgba(0,0,0,0)');tx2.fillStyle=g;tx2.fillRect(x-r,y-r,r*2,r*2)};
  let pmx=0,pmy=0,sw=0;
  (function loop(t){requestAnimationFrame(loop);if(!H.active||!ready)return;t=t||0;
