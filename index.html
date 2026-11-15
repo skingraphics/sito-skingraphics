@@ -58,11 +58,14 @@ body.ondark-logo .wm img{filter:none}
 #bang{position:absolute;inset:0;width:100%;height:100%}
 /* personaggio che diventa codice */
 .hchar{position:absolute;inset:0;z-index:2;overflow:hidden}
-.hchar img{position:absolute;inset:-3%;width:106%;height:106%;object-fit:cover;will-change:transform;mix-blend-mode:screen}
+.hchar img,.hchar video{position:absolute;inset:-3%;width:106%;height:106%;object-fit:cover;will-change:transform;mix-blend-mode:screen}
 .hchar canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair}
 .hero-photo{position:absolute;inset:0;opacity:0}
 .hero-photo img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.1) brightness(.9)}
 .hero-photo:after{content:"";position:absolute;inset:0;background:var(--ink);mix-blend-mode:color;opacity:.35}
+/* viraggio rosso mentre appare la firma (come il verde di Norris) */
+.tint{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;background:radial-gradient(ellipse at 50% 40%,var(--red) 0%,#8f1216 45%,#2a0406 100%);mix-blend-mode:color}
+.tint2{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;background:linear-gradient(180deg,rgba(60,4,6,.0) 30%,rgba(40,2,4,.75) 100%);mix-blend-mode:multiply}
 .ticket{position:absolute;left:18px;bottom:18px;width:150px;border:1px solid var(--ink);color:var(--ink);padding:0 10px 10px;z-index:4}
 .ticket .tab{display:inline-block;border:1px solid var(--ink);border-top:0;padding:3px 8px;margin:0 0 10px -11px;background:var(--cream)}
 .ticket svg{width:100%;height:46px;margin:6px 0}
@@ -240,8 +243,8 @@ const src=u=>esc(u||'');
 const R={
  hero:d=>`<section id="hero" class="topoD${d.bg_mode==='chiaro'?'':' dark'}">
   <div class="mq-wrap" id="mqw"><div class="mq-line s1" id="mq1">${(esc(d.marquee_serif)+' · ').repeat(4)}</div><div class="mq-line s2" id="mq2">${(esc(d.marquee_sans)+' · ').repeat(3)}</div></div>
-  <div class="hero-card" id="heroCard">${d.bg_mode==='chiaro'?'<div class="cream-bg cream topoL"></div>':'<div class="hero-bg" id="heroBg"><div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div><div class="vig"></div><div class="grain"></div></div>'}${d.subject==='personaggio'&&d.character_img?`<div class="hchar" id="hchar"><img id="hcImg" src="${src(d.character_img)}" alt="" crossorigin="anonymous"><canvas id="hcCode"></canvas></div>`:'<canvas id="bang"></canvas>'}
-   <div class="hero-photo" id="heroPhoto"><img src="${src(d.photo)}" alt=""></div>
+  <div class="hero-card" id="heroCard">${d.bg_mode==='chiaro'?'<div class="cream-bg cream topoL"></div>':'<div class="hero-bg" id="heroBg"><div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div><div class="vig"></div><div class="grain"></div></div>'}${d.subject==='personaggio'&&d.character_img?`<div class="hchar" id="hchar">${d.character_video?`<video id="hcImg" src="${src(d.character_video)}" poster="${src(d.character_img)}" autoplay muted loop playsinline crossorigin="anonymous"></video>`:`<img id="hcImg" src="${src(d.character_img)}" alt="" crossorigin="anonymous">`}<canvas id="hcCode"></canvas></div>`:'<canvas id="bang"></canvas>'}
+   <div class="hero-photo" id="heroPhoto"><img src="${src(d.photo)}" alt=""></div><div class="tint" id="tint"></div><div class="tint2" id="tint2"></div>
    <div class="ticket cap" id="ticket"><span class="tab">${esc(d.ticket_tab)}</span>
     <svg viewBox="0 0 140 46" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="4" width="136" height="38" rx="4"/><rect x="10" y="10" width="36" height="26"/><rect x="52" y="10" width="36" height="26"/><rect x="94" y="10" width="36" height="26"/><g fill="var(--red)" stroke="none" font-family="Arial" font-weight="700" font-size="18"><text x="22" y="30">7</text><text x="64" y="30">7</text><text x="106" y="30">7</text></g></svg>
     <div>${esc(d.ticket_text)}</div><hr><div class="badge"><b>!</b>${esc(d.ticket_badge)}</div></div>
@@ -405,17 +408,19 @@ if($('#hchar'))(function(){
  const CODE=(hd.code_text||"const skin={design:'!',since:2013,city:'Crotone'};function bet(odds){return odds*777}<div class='hero'>sk!n</div>.casino{color:#e31e24}if(win){jackpot()}let spin=()=>reels.map(r=>r.roll());import{Slot,Banner,Promo}from'./skin';while(play){render(frame++)}// graphic solutions ").replace(/\s+/g,' ');
  const oc=document.createElement('canvas'),ox=oc.getContext('2d'),mk=document.createElement('canvas'),mx2=mk.getContext('2d'),sm=document.createElement('canvas'),sx=sm.getContext('2d',{willReadFrequently:true});
  let W,Hh,dpr=Math.min(devicePixelRatio||1,2),fs,cols,rows,cells=[],ready=false;
- function build(){if(!img.naturalWidth)return;W=wrap.clientWidth;Hh=wrap.clientHeight;
+ const isV=img.tagName==='VIDEO';let geo=null;
+ function sample(){if(!geo)return false;sx.clearRect(0,0,cols,rows);try{sx.drawImage(img,geo[0],geo[1],geo[2],geo[3])}catch(e){return false}
+  let d;try{d=sx.getImageData(0,0,cols,rows).data}catch(e){console.warn('codice: immagine non leggibile',e);return false}
+  for(let j=0,n=0;j<rows;j++)for(let i=0;i<cols;i++,n++){const k=n*4,R=d[k]/255,G=d[k+1]/255,B=d[k+2]/255,L=.3*R+.59*G+.11*B;
+   const red=R>.25&&R>G*1.6&&R>B*1.6;const c=cells[n]||(cells[n]={x:i*fs*.62,y:j*fs});c.L=L;c.red=red;c.a=red?Math.min(1,.6+R):(L<.03?.13:Math.min(1,.3+L*2.2))}
+  return true}
+ function build(){const nw=img.naturalWidth||img.videoWidth,nh=img.naturalHeight||img.videoHeight;if(!nw)return;W=wrap.clientWidth;Hh=wrap.clientHeight;
   [cv,oc,mk].forEach(c=>{c.width=W*dpr;c.height=Hh*dpr});[ctx,ox,mx2].forEach(c=>c.setTransform(dpr,0,0,dpr,0,0));
   fs=mobile?9:11;cols=Math.ceil(W/(fs*.62));rows=Math.ceil(Hh/fs);sm.width=cols;sm.height=rows;
   const r=img.getBoundingClientRect(),wr=wrap.getBoundingClientRect();  // stessa inquadratura dell'immagine (object-fit:cover)
-  const iw=img.naturalWidth,ih=img.naturalHeight,sc=Math.max(r.width/iw,r.height/ih),dw=iw*sc,dh=ih*sc,dx=r.left-wr.left+(r.width-dw)/2,dy=r.top-wr.top+(r.height-dh)/2;
-  sx.clearRect(0,0,cols,rows);sx.drawImage(img,dx*cols/W,dy*rows/Hh,dw*cols/W,dh*rows/Hh);
-  let d;try{d=sx.getImageData(0,0,cols,rows).data}catch(e){console.warn('codice: immagine non leggibile',e);return}
-  cells=[];for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){const k=(j*cols+i)*4,R=d[k]/255,G=d[k+1]/255,B=d[k+2]/255,L=.3*R+.59*G+.11*B;
-   const red=R>.25&&R>G*1.6&&R>B*1.6;cells.push({x:i*fs*.62,y:j*fs,L,red,a:red?Math.min(1,.6+R):(L<.03?.13:Math.min(1,.3+L*2.2))})}
-  ready=true}
- img.complete?build():img.addEventListener('load',build);addEventListener('resize',()=>setTimeout(build,120));
+  const iw=nw,ih=nh,sc=Math.max(r.width/iw,r.height/ih),dw=iw*sc,dh=ih*sc,dx=r.left-wr.left+(r.width-dw)/2,dy=r.top-wr.top+(r.height-dh)/2;
+  geo=[dx*cols/W,dy*rows/Hh,dw*cols/W,dh*rows/Hh];cells=[];ready=sample()}
+ if(isV){img.readyState>=2?build():img.addEventListener('loadeddata',build);img.play&&img.play().catch(()=>{})}else{img.complete?build():img.addEventListener('load',build)}addEventListener('resize',()=>setTimeout(build,120));
  let px=-999,py=-999,tx=-999,ty=-999,rad=0,trad=0,idle=0,t0=0;
  const mv=(x,y)=>{const b=wrap.getBoundingClientRect();tx=x-b.left;ty=y-b.top;trad=R0;idle=0};
  wrap.addEventListener('pointermove',e=>mv(e.clientX,e.clientY));wrap.addEventListener('pointerleave',()=>trad=0);
@@ -426,7 +431,7 @@ if($('#hchar'))(function(){
   pmx+=(((tx>-999?tx/W:.5)-.5)-pmx)*.04;pmy+=(((ty>-999?ty/Hh:.5)-.5)-pmy)*.04;
   const br=1+Math.sin((t||0)/1600)*.008;img.style.transform=`translate3d(${-pmx*18}px,${-pmy*12}px,0) scale(${br})`;
   ctx.clearRect(0,0,W,Hh);if(rad<2)return;
-  if(t-t0>60){t0=t;const off=Math.floor(t/90);ox.clearRect(0,0,W,Hh);ox.font=`600 ${fs}px ui-monospace,Menlo,Consolas,monospace`;ox.textBaseline='top';
+  if(t-t0>60){t0=t;if(isV)sample();const off=Math.floor(t/90);ox.clearRect(0,0,W,Hh);ox.font=`600 ${fs}px ui-monospace,Menlo,Consolas,monospace`;ox.textBaseline='top';
    const x0=px-rad*1.3,x1=px+rad*1.3,y0=py-rad*1.3,y1=py+rad*1.3;
    for(let n=0;n<cells.length;n++){const c=cells[n];if(c.x<x0||c.x>x1||c.y<y0||c.y>y1)continue;
     let ch=CODE[(n+off)%CODE.length];if(Math.random()<.04)ch=String.fromCharCode(33+Math.random()*90|0);
@@ -464,6 +469,7 @@ if($('#hero')){
   .fromTo('#mq1',{xPercent:5},{xPercent:-45,duration:3,ease:'none'},.4).fromTo('#mq2',{xPercent:-45},{xPercent:5,duration:3,ease:'none'},.4)
   .to('#heroPhoto',{opacity:1,duration:.5},1.1).to('#msgLbl',{opacity:1,duration:.3},1.2)
   .to(sp,{strokeDashoffset:0,duration:1.4,ease:'power1.inOut'},1.5)
+  .to('#tint',{opacity:FX.signature_tint===false?0:(FX.signature_tint_strength==null?.85:+FX.signature_tint_strength),duration:1.2,ease:'power1.inOut'},1.4).to('#tint2',{opacity:FX.signature_tint===false?0:1,duration:1.2},1.4)
   .to('#heroCard,#sign,#msgLbl',{opacity:0,duration:.5},3.1).to('#mqw',{opacity:0,duration:.4},3.2);
 }
 
