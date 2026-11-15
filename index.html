@@ -506,7 +506,8 @@ if($('#hero')){
   .to('#heroPhoto',{opacity:(window.__HERO&&window.__HERO.subject==='personaggio'&&window.__HERO.character_img&&!window.__HERO.photo_in_card)?0:1,duration:.5},1.1)
   .to(sp,{strokeDashoffset:0,duration:1.4,ease:'power1.inOut'},1.5)
   .to('#tint',{opacity:FX.signature_tint===false?0:(FX.signature_tint_strength==null?.85:+FX.signature_tint_strength),duration:1.2,ease:'power1.inOut'},1.4).to('#tint2',{opacity:FX.signature_tint===false?0:1,duration:1.2},1.4)
-  .to('#heroCard,#sign,#msgLbl',{opacity:0,duration:.5},3.1).to('#mqw',{opacity:0,duration:.4},3.2);
+  .to('#heroCard,#sign,#msgLbl',{opacity:0,duration:.5},3.1)
+  .fromTo('#hero',{backgroundColor:'rgba(22,22,22,0)'},{backgroundColor:FX.hero_scroll_bg||'#3d0709',duration:2.2,ease:'power1.in'},.6).to('#hero',{backgroundColor:'rgba(22,22,22,0)',duration:.6},3.2).to('#mqw',{opacity:0,duration:.4},3.2);
 }
 
 /* MANIFESTO */
