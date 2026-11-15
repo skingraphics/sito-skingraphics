@@ -142,7 +142,7 @@ body.ondark-logo .wm img{filter:none}
 .bleed{position:absolute;z-index:1;pointer-events:none;mix-blend-mode:lighten;bottom:0;height:min(100vh,1100px)}
 .bleed.l{left:0}.bleed.r{right:0}
 .bleed img,.bleed video{height:100%;width:auto;display:block}
-.bleed.l img,.bleed.l video{margin-left:-9vw}.bleed.r img,.bleed.r video{margin-right:-9vw}
+.bleed.l img,.bleed.l video{margin-left:-2vw}.bleed.r img,.bleed.r video{margin-right:-6vw}
 @media (max-width:900px){.onoff .pair{flex-direction:column;align-items:center;gap:12vh}.onoff .col{max-width:80vw}.onoff .col.l,.onoff .col.r{align-items:center;text-align:center}.bleed{height:55vh;top:50%;bottom:auto;margin-top:-27vh;opacity:.45}.bleed.l img,.bleed.l video{margin-left:-30vw}.bleed.r img,.bleed.r video{margin-right:-30vw}}
 /* ---------- full bleed ---------- */
 .fullbleed{height:110vh;overflow:hidden;position:relative}
@@ -387,7 +387,12 @@ const wm=$('#wm');const logo=S.logo||{};
 function theme(light){document.body.classList.toggle('onlight',light);wm.src=light?(logo.light||'img/logo.svg'):(logo.dark||'img/logo-neg.svg')}
 const heroLight=!!$('#hero')&&!$('#hero.dark');theme(heroLight);
 const isLight=el=>{if(el.classList.contains('cream'))return true;const c=getComputedStyle(el).backgroundColor.match(/[\d.]+/g);if(!c||(c[3]!==undefined&&+c[3]<.5))return false;return (.3*c[0]+.59*c[1]+.11*c[2])>150};
-document.querySelectorAll('#main>section:not(#hero):not(#story),footer').forEach(sec=>ScrollTrigger.create({trigger:sec,start:'top 60px',end:'bottom 60px',onToggle:st=>{if(st.isActive)theme(sec.tagName==='FOOTER'?false:isLight(sec))}}));
+let menuOpen=false,lastLight=null;
+function syncTheme(){if(menuOpen)return;const y=60;let light=false;
+ for(const sec of document.querySelectorAll('#main>section,footer')){const r=sec.getBoundingClientRect();if(r.top<=y&&r.bottom>y){
+  if(sec.id==='hero')light=heroLight&&r.top>-innerHeight*.3;else if(sec.tagName==='FOOTER'){const fp=sec.querySelector('.fpanel');light=!(fp&&fp.getBoundingClientRect().top<=y)}else light=isLight(sec);break}}
+ if(light!==lastLight){lastLight=light;theme(light)}}
+addEventListener('scroll',()=>requestAnimationFrame(syncTheme),{passive:true});gsap.ticker.add(()=>{if(lenis)syncTheme()});
 
 /* HERO 3D */
 const H={active:true};
@@ -482,7 +487,7 @@ if($('#heroBg')){
 if($('#hero')){
  const sp=$('#signPath');const L=sp.getTotalLength?sp.getTotalLength():2000;gsap.set(sp,{strokeDasharray:L,strokeDashoffset:FX.signature_draw===false?0:L});if(FX.signature_draw===false)sp.style.display='none';
  const ht=gsap.timeline({scrollTrigger:{trigger:'#hero',start:'top top',end:'+='+(+FX.hero_scroll_length||2800),pin:true,scrub:1,
-  onUpdate:s=>{theme(heroLight&&s.progress<.12);H.active=s.progress<.55;$('#monoLbl').style.opacity=s.progress>.3&&s.progress<.95?1:0}}});
+  onUpdate:s=>{H.active=s.progress<.55;$('#monoLbl').style.opacity=s.progress>.3&&s.progress<.95?1:0}}});
  ht.to('#heroCard',{clipPath:mobile?'inset(24% 10% 24% 10%)':'inset(24% 32% 24% 32%)',duration:1.2,ease:LE},0)
   .to('.ticket,.hint,.corner',{opacity:0,duration:.3},0).to('#mqw',{opacity:1,duration:.4},.5)
   .fromTo('#mq1',{xPercent:5},{xPercent:-45,duration:3,ease:'none'},.4).fromTo('#mq2',{xPercent:-45},{xPercent:5,duration:3,ease:'none'},.4)
@@ -504,7 +509,7 @@ if($('#stmt')){
 if($('#strack')){
  const strack=$('#strack'),st=$('#story');
  const sTween=gsap.to(strack,{x:()=>-(strack.scrollWidth-innerWidth),ease:'none',scrollTrigger:{trigger:'#story',start:'top top',end:()=>'+='+(strack.scrollWidth-innerWidth),pin:true,scrub:1,invalidateOnRefresh:true,
-  onUpdate:s=>{const light=FX.story_color_switch!==false&&s.progress>.45;st.style.backgroundColor=light?'#d9d4cc':'';st.style.color=light?'var(--ink)':'';st.classList.toggle('topoL',light);st.classList.toggle('topoD',!light);theme(light)},onLeave:()=>theme(false),onLeaveBack:()=>theme(false)}});
+  onUpdate:s=>{const light=FX.story_color_switch!==false&&s.progress>.45;st.style.backgroundColor=light?'#d9d4cc':'';st.style.color=light?'var(--ink)':'';st.classList.toggle('topoL',light);st.classList.toggle('topoD',!light)}}});
  document.querySelectorAll('.frag').forEach(f=>{const s=+f.dataset.sp||1;gsap.fromTo(f,{y:(s-1)*260},{y:-(s-1)*260,ease:'none',scrollTrigger:{trigger:f,containerAnimation:sTween,start:'left right',end:'right left',scrub:true}});
   gsap.from(f.querySelector('img'),{clipPath:'inset(100% 0 0 0)',duration:.75,ease:LE,scrollTrigger:{trigger:f,containerAnimation:sTween,start:'left 85%'}})});
  document.querySelectorAll('.quote svg path').forEach(p=>{const l=p.getTotalLength?p.getTotalLength():300;gsap.set(p,{strokeDasharray:l,strokeDashoffset:l});gsap.to(p,{strokeDashoffset:0,duration:1.2,scrollTrigger:{trigger:p.closest('.quote'),containerAnimation:sTween,start:'left 70%'}})});
@@ -539,8 +544,8 @@ gsap.from('.fpanel .big',{yPercent:60,opacity:0,duration:.9,ease:LE,scrollTrigge
 gsap.from('.fcols>*',{y:50,opacity:0,stagger:.08,duration:.75,ease:LE,scrollTrigger:{trigger:'.fcols',start:'top 90%'}});
 /* MENU */
 let open=false,prevLight;const mt=gsap.timeline({paused:true}).to('#menu',{clipPath:'inset(0 0 0% 0)',duration:.75,ease:LE}).from('#menu a.big span',{yPercent:110,stagger:.05,duration:.6,ease:'expo.out'},'-=.3');
-$('#sq').onclick=()=>{open=!open;if(open){prevLight=document.body.classList.contains('onlight');theme(false);mt.play()}else{mt.reverse();theme(prevLight)}};
-document.querySelectorAll('#menu a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();open=false;const h=a.getAttribute('href');if(FX.page_transition===false){mt.reverse();setTimeout(()=>go(h),350)}else{go(h);setTimeout(()=>{mt.progress(0).pause()},1000)}}));
+$('#sq').onclick=()=>{open=!open;menuOpen=open;if(open){theme(false);mt.play()}else{mt.reverse();lastLight=null;syncTheme()}};
+document.querySelectorAll('#menu a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();open=false;menuOpen=false;lastLight=null;const h=a.getAttribute('href');if(FX.page_transition===false){mt.reverse();setTimeout(()=>go(h),350)}else{go(h);setTimeout(()=>{mt.progress(0).pause()},1000)}}));
 document.querySelectorAll('a[href^="#"]:not(#menu a)').forEach(a=>a.addEventListener('click',e=>{const h=a.getAttribute('href');if(h.length<2)return;e.preventDefault();go(h)}));
 ScrollTrigger.refresh();addEventListener('load',()=>ScrollTrigger.refresh());
 }
