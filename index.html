@@ -422,27 +422,44 @@ if($('#hchar'))(function(){
   const iw=nw,ih=nh,sc=Math.max(r.width/iw,r.height/ih),dw=iw*sc,dh=ih*sc,dx=r.left-wr.left+(r.width-dw)/2,dy=r.top-wr.top+(r.height-dh)/2;
   geo=[dx*cols/W,dy*rows/Hh,dw*cols/W,dh*rows/Hh];cells=[];ready=sample()}
  if(isV){img.readyState>=2?build():img.addEventListener('loadeddata',build);img.play&&img.play().catch(()=>{})}else{img.complete?build():img.addEventListener('load',build)}addEventListener('resize',()=>setTimeout(build,120));
- let px=-999,py=-999,tx=-999,ty=-999,rad=0,trad=0,idle=0,t0=0;
- const mv=(x,y)=>{const b=wrap.getBoundingClientRect();tx=x-b.left;ty=y-b.top;trad=R0;idle=0};
- wrap.addEventListener('pointermove',e=>mv(e.clientX,e.clientY));wrap.addEventListener('pointerleave',()=>trad=0);
+ // PENNELLO: dove passa il mouse lascia una scia di codice che svanisce piano
+ const tr=document.createElement('canvas'),tx2=tr.getContext('2d');
+ const BR=+hd.code_lens_radius||(mobile?60:85);            // grandezza pennello
+ const LIFE=Math.max(.3,+hd.code_trail||1.4);               // secondi prima che la scia sparisca
+ let pts=[],tx=-999,ty=-999,lx=null,ly=null,over=false,t0=0,lastT=0;
+ function sizeTr(){tr.width=W*dpr;tr.height=Hh*dpr;tx2.setTransform(dpr,0,0,dpr,0,0)}
+ const mv=(x,y)=>{const b=wrap.getBoundingClientRect();tx=x-b.left;ty=y-b.top;over=true};
+ wrap.addEventListener('pointermove',e=>mv(e.clientX,e.clientY));wrap.addEventListener('pointerleave',()=>{over=false;lx=null});
  wrap.addEventListener('touchmove',e=>{const t=e.touches[0];if(t)mv(t.clientX,t.clientY)},{passive:true});
- let pmx=0,pmy=0;
- (function loop(t){requestAnimationFrame(loop);if(!H.active||!ready)return;
-  idle++;if(idle>160)trad=0;px+=(tx-px)*.16;py+=(ty-py)*.16;rad+=(trad-rad)*.1;
+ wrap.addEventListener('touchend',()=>{over=false;lx=null});
+ const dab=(x,y,r)=>{const g=tx2.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,'rgba(0,0,0,1)');g.addColorStop(.55,'rgba(0,0,0,.85)');g.addColorStop(1,'rgba(0,0,0,0)');tx2.fillStyle=g;tx2.fillRect(x-r,y-r,r*2,r*2)};
+ let pmx=0,pmy=0,sw=0;
+ (function loop(t){requestAnimationFrame(loop);if(!H.active||!ready)return;t=t||0;
+  if(tr.width!==W*dpr||tr.height!==Hh*dpr)sizeTr();
+  const dt=Math.min(.05,(t-lastT)/1000||.016);lastT=t;
   pmx+=(((tx>-999?tx/W:.5)-.5)-pmx)*.04;pmy+=(((ty>-999?ty/Hh:.5)-.5)-pmy)*.04;
-  const br=1+Math.sin((t||0)/1600)*.008;img.style.transform=`translate3d(${-pmx*18}px,${-pmy*12}px,0) scale(${br})`;
-  ctx.clearRect(0,0,W,Hh);if(rad<2)return;
+  const br=1+Math.sin(t/1600)*.008;img.style.transform=`translate3d(${-pmx*18}px,${-pmy*12}px,0) scale(${br})`;
+  // la scia svanisce
+  tx2.globalCompositeOperation='destination-out';tx2.fillStyle=`rgba(0,0,0,${Math.min(1,dt*2.6/LIFE)})`;tx2.fillRect(0,0,W,Hh);tx2.globalCompositeOperation='source-over';
+  // nuove pennellate lungo il percorso del mouse
+  if(over&&tx>-999){const x=tx,y=ty;
+   if(lx==null){lx=x;ly=y}
+   const d=Math.hypot(x-lx,y-ly),sp=Math.min(1,d/40);sw+=(sp-sw)*.2;const r=BR*(.75+sw*.5);
+   const n=Math.max(1,Math.ceil(d/(r*.25)));for(let k=1;k<=n;k++){const xx=lx+(x-lx)*k/n,yy=ly+(y-ly)*k/n;dab(xx,yy,r);pts.push([xx,yy,t,r])}
+   if(d<.5){dab(x,y,r*.9);pts.push([x,y,t,r])}
+   lx=x;ly=y}
+  pts=pts.filter(p=>t-p[2]<LIFE*1600);
+  ctx.clearRect(0,0,W,Hh);if(!pts.length)return;
+  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;for(const p of pts){x0=Math.min(x0,p[0]-p[3]);y0=Math.min(y0,p[1]-p[3]);x1=Math.max(x1,p[0]+p[3]);y1=Math.max(y1,p[1]+p[3])}
   if(t-t0>60){t0=t;if(isV)sample();const off=Math.floor(t/90);ox.clearRect(0,0,W,Hh);ox.font=`600 ${fs}px ui-monospace,Menlo,Consolas,monospace`;ox.textBaseline='top';
-   const x0=px-rad*1.3,x1=px+rad*1.3,y0=py-rad*1.3,y1=py+rad*1.3;
    for(let n=0;n<cells.length;n++){const c=cells[n];if(c.x<x0||c.x>x1||c.y<y0||c.y>y1)continue;
     let ch=CODE[(n+off)%CODE.length];if(Math.random()<.04)ch=String.fromCharCode(33+Math.random()*90|0);
     ox.fillStyle=c.red?`rgba(255,${40+c.L*60|0},${36+c.L*40|0},${c.a})`:`rgba(230,226,219,${c.a})`;ox.fillText(ch,c.x,c.y)}}
-  const g=r=>{const gr=mx2.createRadialGradient(px,py,0,px,py,r);gr.addColorStop(0,'rgba(0,0,0,1)');gr.addColorStop(.7,'rgba(0,0,0,1)');gr.addColorStop(1,'rgba(0,0,0,0)');return gr};
-  ctx.fillStyle=(()=>{const gr=ctx.createRadialGradient(px,py,0,px,py,rad);gr.addColorStop(0,'rgba(11,11,11,1)');gr.addColorStop(.72,'rgba(11,11,11,.97)');gr.addColorStop(1,'rgba(11,11,11,0)');return gr})();
-  ctx.beginPath();ctx.arc(px,py,rad,0,7);ctx.fill();
-  mx2.globalCompositeOperation='source-over';mx2.clearRect(0,0,W,Hh);mx2.drawImage(oc,0,0,W,Hh);mx2.globalCompositeOperation='destination-in';mx2.fillStyle=g(rad);mx2.fillRect(0,0,W,Hh);
+  // 1) scurisce l'immagine sotto la scia  2) ci disegna sopra il codice, con la stessa forma della scia
+  mx2.globalCompositeOperation='source-over';mx2.clearRect(0,0,W,Hh);mx2.drawImage(tr,0,0,W,Hh);mx2.globalCompositeOperation='source-in';mx2.fillStyle='rgba(11,11,11,.96)';mx2.fillRect(0,0,W,Hh);
   ctx.drawImage(mk,0,0,W,Hh);
-  ctx.strokeStyle='rgba(227,30,36,.35)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(px,py,rad*.86,0,7);ctx.stroke();
+  mx2.globalCompositeOperation='source-over';mx2.clearRect(0,0,W,Hh);mx2.drawImage(oc,0,0,W,Hh);mx2.globalCompositeOperation='destination-in';mx2.drawImage(tr,0,0,W,Hh);
+  ctx.drawImage(mk,0,0,W,Hh);
  })();
 })();
 
@@ -468,7 +485,7 @@ if($('#hero')){
  ht.to('#heroCard',{clipPath:mobile?'inset(24% 10% 24% 10%)':'inset(24% 32% 24% 32%)',duration:1.2,ease:LE},0)
   .to('.ticket,.hint',{opacity:0,duration:.3},0).to('#mqw',{opacity:1,duration:.4},.5)
   .fromTo('#mq1',{xPercent:5},{xPercent:-45,duration:3,ease:'none'},.4).fromTo('#mq2',{xPercent:-45},{xPercent:5,duration:3,ease:'none'},.4)
-  .to('#heroPhoto',{opacity:1,duration:.5},1.1)
+  .to('#heroPhoto',{opacity:(window.__HERO&&window.__HERO.subject==='personaggio'&&window.__HERO.character_img&&!window.__HERO.photo_in_card)?0:1,duration:.5},1.1)
   .to(sp,{strokeDashoffset:0,duration:1.4,ease:'power1.inOut'},1.5)
   .to('#tint',{opacity:FX.signature_tint===false?0:(FX.signature_tint_strength==null?.85:+FX.signature_tint_strength),duration:1.2,ease:'power1.inOut'},1.4).to('#tint2',{opacity:FX.signature_tint===false?0:1,duration:1.2},1.4)
   .to('#heroCard,#sign,#msgLbl',{opacity:0,duration:.5},3.1).to('#mqw',{opacity:0,duration:.4},3.2);
