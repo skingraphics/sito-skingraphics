@@ -191,11 +191,11 @@ body.ondark-logo .wm img{filter:none}
 .social{padding:16vh 4vw 22vh;text-align:center;overflow:hidden}
 .social .t{font-variation-settings:"wdth" var(--wdth,93);font-weight:750;font-size:clamp(46px,4.6vw,67px);letter-spacing:-1.85px;text-transform:uppercase;line-height:1}
 .social .t .serif{color:var(--red)}
-.deck{position:relative;height:62vh;margin-top:8vh}
+.deck{position:relative;height:calc(min(23vw,300px)*16/9 + 90px);margin-top:9vh}
 .dc{position:absolute;left:50%;bottom:0;width:min(23vw,300px);aspect-ratio:9/16;border-radius:22px;overflow:hidden;transform-origin:50% 150%;transition:transform .8s var(--ease)}
-.dc img{width:100%;height:100%;object-fit:cover}
+.dc img{width:100%;height:100%;object-fit:cover;object-position:center 25%}
 .dc .who{position:absolute;left:12px;bottom:12px;right:12px;background:rgba(22,22,22,.7);backdrop-filter:blur(6px);color:var(--cream);border-radius:10px;padding:8px 10px;font-size:12px;text-align:left}
-@media (max-width:900px){.dc{width:42vw}}
+@media (max-width:900px){.dc{width:46vw;border-radius:16px}.deck{height:calc(46vw*16/9 + 60px);margin-top:6vh}.social{padding:12vh 4vw 14vh}}
 /* ---------- footer ---------- */
 footer{padding:18px;background:radial-gradient(circle at 50% -190%,rgba(227,30,36,0) 68%,rgb(227,30,36) 83%) ,var(--cream)}
 .fpanel{background:var(--ink);color:var(--fog);padding:12vh 4vw 4vh;position:relative;clip-path:polygon(0 30px,38% 30px,40% 0,60% 0,62% 30px,100% 30px,100% 100%,0 100%)}
@@ -213,10 +213,36 @@ footer{padding:18px;background:radial-gradient(circle at 50% -190%,rgba(227,30,3
 
 .notopo .topoD,.notopo .topoL,.topoanim .topoD,.topoanim .topoL{background-image:none!important}
 #topo{position:fixed;inset:0;width:100%;height:100%;z-index:60;pointer-events:none;mix-blend-mode:difference}
+video::-webkit-media-controls,video::-webkit-media-controls-start-playback-button,video::-webkit-media-controls-overlay-play-button{display:none!important;-webkit-appearance:none}
 #boot{position:fixed;inset:0;z-index:200;clip-path:inset(0% 0% 0% 0%);background:var(--ink);display:flex;align-items:center;justify-content:center;transition:opacity .6s}
 #boot svg{height:56px;animation:pulse 1s ease-in-out infinite alternate}
 @keyframes pulse{to{opacity:.3}}
 .logos span img{max-height:36px;width:auto}
+
+/* ---------- MOBILE ---------- */
+@media (max-width:900px){
+ body{font-size:16px}
+ .chrome{inset:12px 12px auto 12px}.wm img{height:36px}.btn{height:46px;padding:0 12px;font-size:13px}.sq{width:46px;height:46px}
+ .mono-c{display:none}
+ #menu{grid-template-columns:1fr;padding:100px 6vw 6vw;align-content:start;gap:40px}
+ #menu a.big{font-size:clamp(40px,12vw,64px);letter-spacing:-1.5px}#menu .side{justify-self:start;text-align:left}
+ .corner{left:14px;bottom:16px;font-size:10px}.hint{bottom:14px}
+ .manifesto{padding:16vh 6vw 14vh}
+ .stmt{font-size:clamp(34px,10vw,56px)!important;letter-spacing:-1px!important}
+ .onoff{padding:14vh 6vw}.onoff .ser,.onoff .san{font-size:clamp(52px,16vw,80px)}
+ .fullbleed .over .san{font-size:clamp(38px,11vw,60px);letter-spacing:-1.5px}
+ .product .txt{padding:12vh 6vw 6vh}
+ .product .t1{font-size:clamp(38px,11.5vw,64px);letter-spacing:-1.5px}.product .t2{font-size:clamp(30px,8.6vw,60px);letter-spacing:-1px}
+ .partners{padding:12vh 0 12vh}.partners .t{font-size:clamp(34px,10vw,52px);padding:0 6vw}
+ .brush{top:calc(12vh + 70px);font-size:clamp(84px,26vw,140px)}
+ .logos{margin-top:200px;display:grid;grid-template-columns:1fr 1fr;justify-items:center;gap:14px}
+ .social .t{font-size:clamp(34px,10vw,52px);letter-spacing:-1px}
+ .fpanel{padding:10vh 6vw 4vh;clip-path:polygon(0 24px,30% 24px,34% 0,66% 0,70% 24px,100% 24px,100% 100%,0 100%)}
+ .fpanel .big{font-size:clamp(40px,12vw,64px);letter-spacing:-1.5px}
+ .fcols{grid-template-columns:1fr;gap:34px;margin-top:7vh}
+ .fcols a{font-size:22px}.fport{max-width:60%}
+ .hof .head .t{font-size:clamp(44px,13vw,72px)!important}
+}
 </style>
 </head>
 <body class="onlight">
@@ -365,7 +391,10 @@ function topoAnim(){
  requestAnimationFrame(frame);
 }
 
-function init(){
+function autoplayVideos(){const vs=[...document.querySelectorAll('video')];vs.forEach(v=>{v.muted=true;v.defaultMuted=true;v.playsInline=true;v.setAttribute('muted','');v.setAttribute('playsinline','');v.setAttribute('webkit-playsinline','');v.removeAttribute('controls');const p=v.play();p&&p.catch(()=>{})});
+ const kick=()=>vs.forEach(v=>{if(v.paused){const p=v.play();p&&p.catch(()=>{})}});['touchstart','click','scroll'].forEach(ev=>addEventListener(ev,kick,{once:true,passive:true}));
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)kick()})}
+function init(){autoplayVideos();
 topoAnim();
 gsap.registerPlugin(ScrollTrigger);
 const LE='power4.inOut';const mobile=matchMedia('(max-width:900px)').matches;const $=s=>document.querySelector(s);
@@ -424,7 +453,7 @@ if($('#bang')&&FX.hero_3d!==false&&window.THREE)(function(){
 })();
 
 /* PERSONAGGIO → CODICE: sotto il mouse l'immagine si trasforma in codice */
-if($('#hchar'))(function(){
+if($('#hchar'))(function(){const coarse=matchMedia('(hover:none),(pointer:coarse)').matches;
  const wrap=$('#hchar'),img=$('#hcImg'),cv=$('#hcCode'),ctx=cv.getContext('2d');
  const hd=window.__HERO||{};const R0=+hd.code_lens_radius||(mobile?120:190);
  const CODE=(hd.code_text||"const skin={design:'!',since:2013,city:'Crotone'};function bet(odds){return odds*777}<div class='hero'>sk!n</div>.casino{color:#e31e24}if(win){jackpot()}let spin=()=>reels.map(r=>r.roll());import{Slot,Banner,Promo}from'./skin';while(play){render(frame++)}// graphic solutions ").replace(/\s+/g,' ');
@@ -444,11 +473,10 @@ if($('#hchar'))(function(){
   geo=[dx*cols/W,dy*rows/Hh,dw*cols/W,dh*rows/Hh];cells=[];ready=sample()}
  if(isV){img.readyState>=2?build():img.addEventListener('loadeddata',build);img.play&&img.play().catch(()=>{})}else{img.complete?build():img.addEventListener('load',build)}addEventListener('resize',()=>setTimeout(build,120));
  // LENTE: cerchio morbido che segue il mouse e mostra il personaggio fatto di codice
- let px=-999,py=-999,tx=-999,ty=-999,rad=0,trad=0,t0=0;
+ let px=-999,py=-999,tx=-999,ty=-999,rad=0,trad=0,t0=0;if(coarse){$('#hcCode').style.display='none'}
  const mv=(x,y)=>{const b=wrap.getBoundingClientRect();tx=x-b.left;ty=y-b.top;trad=R0};
  addEventListener('pointermove',e=>{const b=wrap.getBoundingClientRect();if(e.clientX<b.left||e.clientX>b.right||e.clientY<b.top||e.clientY>b.bottom){trad=0;return}if(px<-900){px=e.clientX-b.left;py=e.clientY-b.top}mv(e.clientX,e.clientY)});
  document.addEventListener('pointerleave',()=>trad=0);
- addEventListener('touchmove',e=>{const t=e.touches[0];if(t)mv(t.clientX,t.clientY)},{passive:true});
  let pmx=0,pmy=0;
  (function loop(t){requestAnimationFrame(loop);if(!H.active||!ready)return;t=t||0;
   px+=(tx-px)*.16;py+=(ty-py)*.16;rad+=(trad-rad)*.1;
