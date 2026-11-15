@@ -428,7 +428,7 @@ if($('#hchar'))(function(){
  function sample(){if(!geo)return false;sx.clearRect(0,0,cols,rows);try{sx.drawImage(img,geo[0],geo[1],geo[2],geo[3])}catch(e){return false}
   let d;try{d=sx.getImageData(0,0,cols,rows).data}catch(e){console.warn('codice: immagine non leggibile',e);return false}
   for(let j=0,n=0;j<rows;j++)for(let i=0;i<cols;i++,n++){const k=n*4,R=d[k]/255,G=d[k+1]/255,B=d[k+2]/255,L=.3*R+.59*G+.11*B;
-   const red=R>.25&&R>G*1.6&&R>B*1.6;const c=cells[n]||(cells[n]={x:i*fs*.62,y:j*fs});c.L=L;c.red=red;c.a=red?Math.min(1,.6+R):(L<.03?.26:Math.min(1,.4+L*2.2))}
+   const red=R>.25&&R>G*1.6&&R>B*1.6;const c=cells[n]||(cells[n]={x:i*fs*.62,y:j*fs});c.L=L;c.red=red;c.a=red?Math.min(1,.6+R):(L<.03?.5:Math.min(1,.62+L*2))}
   return true}
  function build(){const nw=img.naturalWidth||img.videoWidth,nh=img.naturalHeight||img.videoHeight;if(!nw)return;W=wrap.clientWidth;Hh=wrap.clientHeight;
   [cv,oc,mk].forEach(c=>{c.width=W*dpr;c.height=Hh*dpr});[ctx,ox,mx2].forEach(c=>c.setTransform(dpr,0,0,dpr,0,0));
@@ -440,7 +440,7 @@ if($('#hchar'))(function(){
  // PENNELLO: dove passa il mouse lascia una scia di codice che svanisce piano
  const tr=document.createElement('canvas'),tx2=tr.getContext('2d');
  const BR=+hd.code_lens_radius||(mobile?95:150);            // grandezza pennello
- const LIFE=Math.max(.3,+hd.code_trail||1.4);               // secondi prima che la scia sparisca
+ const LIFE=Math.max(.3,+hd.code_trail||2.2);               // secondi prima che la scia sparisca
  let pts=[],tx=-999,ty=-999,lx=null,ly=null,over=false,t0=0,lastT=0;
  function sizeTr(){tr.width=W*dpr;tr.height=Hh*dpr;tx2.setTransform(dpr,0,0,dpr,0,0)}
  const mv=(x,y)=>{const b=wrap.getBoundingClientRect();tx=x-b.left;ty=y-b.top;over=true};
