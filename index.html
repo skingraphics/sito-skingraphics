@@ -439,23 +439,18 @@ if($('#hchar'))(function(){
  if(isV){img.readyState>=2?build():img.addEventListener('loadeddata',build);img.play&&img.play().catch(()=>{})}else{img.complete?build():img.addEventListener('load',build)}addEventListener('resize',()=>setTimeout(build,120));
  // PENNELLO: dove passa il mouse lascia una scia di codice che svanisce piano
  const tr=document.createElement('canvas'),tx2=tr.getContext('2d');
- const BR=+hd.code_lens_radius||(mobile?95:150);            // grandezza pennello
+ const BR=+hd.code_lens_radius||(mobile?70:110);            // grandezza pennello
  const LIFE=Math.max(.3,+hd.code_trail||2.2);               // secondi prima che la scia sparisca
  let pts=[],tx=-999,ty=-999,lx=null,ly=null,over=false,t0=0,lastT=0;
  function sizeTr(){tr.width=W*dpr;tr.height=Hh*dpr;tx2.setTransform(dpr,0,0,dpr,0,0)}
  const mv=(x,y)=>{const b=wrap.getBoundingClientRect();tx=x-b.left;ty=y-b.top;over=true};
- addEventListener('pointermove',e=>{const b=wrap.getBoundingClientRect();if(e.clientX<b.left||e.clientX>b.right||e.clientY<b.top||e.clientY>b.bottom){over=false;lx=null;return}mv(e.clientX,e.clientY)});document.addEventListener('pointerleave',()=>{over=false;lx=null});
+ addEventListener('pointermove',e=>{const b=wrap.getBoundingClientRect();if(e.clientX<b.left||e.clientX>b.right||e.clientY<b.top||e.clientY>b.bottom){over=false;lx=null;mxp=null;return}mv(e.clientX,e.clientY)});document.addEventListener('pointerleave',()=>{over=false;lx=null});
  addEventListener('touchmove',e=>{const t=e.touches[0];if(t)mv(t.clientX,t.clientY)},{passive:true});
  addEventListener('touchend',()=>{over=false;lx=null});
- let seed=0;
- const dab=(x,y,r,ang)=>{ // macchia astratta: bordo irregolare, allungata nella direzione del movimento, con frammenti "glitch"
-  seed+=1.7;const N=14,el=1.25+Math.random()*.5;tx2.save();tx2.translate(x,y);tx2.rotate(ang||0);
-  tx2.shadowColor='rgba(0,0,0,1)';tx2.shadowBlur=r*.35;tx2.fillStyle='rgba(0,0,0,.55)';tx2.beginPath();
-  for(let k=0;k<=N;k++){const a=k/N*Math.PI*2,w=.55+.25*Math.sin(a*3+seed)+.2*Math.sin(a*5-seed*1.3)+Math.random()*.12,rr=r*w;
-   const px_=Math.cos(a)*rr*el,py_=Math.sin(a)*rr*(1/el+.15);k?tx2.lineTo(px_,py_):tx2.moveTo(px_,py_)}
-  tx2.closePath();tx2.fill();tx2.restore();
-  if(Math.random()<.35){tx2.fillStyle='rgba(0,0,0,.9)';for(let q=0;q<3;q++){const bx=x+(Math.random()-.5)*r*2.6,by=y+(Math.random()-.5)*r*1.8;tx2.fillRect(bx,by,r*(.15+Math.random()*.7),fs*(1+Math.random()*2|0))}}
- };
+ let mxp=null,myp=null;
+ const stroke=(x0,y0,cx,cy,x1,y1,w)=>{ // tratto di pennello morbido e arrotondato
+  tx2.save();tx2.lineCap='round';tx2.lineJoin='round';tx2.strokeStyle='rgba(0,0,0,.9)';tx2.lineWidth=w;tx2.shadowColor='#000';tx2.shadowBlur=w*.35;
+  tx2.beginPath();tx2.moveTo(x0,y0);tx2.quadraticCurveTo(cx,cy,x1,y1);tx2.stroke();tx2.restore()};
  let pmx=0,pmy=0,sw=0;
  (function loop(t){requestAnimationFrame(loop);if(!H.active||!ready)return;t=t||0;
   if(tr.width!==W*dpr||tr.height!==Hh*dpr)sizeTr();
@@ -468,9 +463,9 @@ if($('#hchar'))(function(){
   if(over&&tx>-999){const x=tx,y=ty;
    if(lx==null){lx=x;ly=y}
    const d=Math.hypot(x-lx,y-ly),sp=Math.min(1,d/40);sw+=(sp-sw)*.2;const r=BR*(.75+sw*.5);
-   const ang=Math.atan2(y-ly,x-lx);const n=Math.max(1,Math.ceil(d/(r*.45)));if(d>=.5)for(let k=1;k<=n;k++){const xx=lx+(x-lx)*k/n,yy=ly+(y-ly)*k/n;dab(xx,yy,r,ang);pts.push([xx,yy,t,r*1.6])}
-   else if(Math.random()<.18){dab(x,y,r*.8,Math.random()*3);pts.push([x,y,t,r*1.6])}
-   lx=x;ly=y}
+   const w=BR*(.9+sw*.35);
+   if(d>=.5){const mx_=(lx+x)/2,my_=(ly+y)/2;if(mxp==null){mxp=lx;myp=ly}stroke(mxp,myp,lx,ly,mx_,my_,w);mxp=mx_;myp=my_;pts.push([lx,ly,t,w],[x,y,t,w])}
+   lx=x;ly=y}else{mxp=null}
   pts=pts.filter(p=>t-p[2]<LIFE*1600);
   ctx.clearRect(0,0,W,Hh);if(!pts.length)return;
   let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;for(const p of pts){x0=Math.min(x0,p[0]-p[3]);y0=Math.min(y0,p[1]-p[3]);x1=Math.max(x1,p[0]+p[3]);y1=Math.max(y1,p[1]+p[3])}
