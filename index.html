@@ -121,16 +121,23 @@ body.ondark-logo .wm img{filter:none}
 .quote svg{width:90px;margin-top:18px}
 .quote svg path{fill:none;stroke:var(--red);stroke-width:5;stroke-linecap:round}
 /* ---------- in gioco / fuori gioco ---------- */
-.onoff{position:relative;padding:20vh 4vw;display:grid;grid-template-columns:1fr 1fr;gap:4vw;overflow:hidden;min-height:110vh;align-items:center}
-.onoff .col{text-align:center;position:relative;z-index:2;display:flex;flex-direction:column;align-items:center}
-.onoff .ser{font-family:var(--serif);font-weight:700;font-size:clamp(70px,7.5vw,108px);line-height:.83;letter-spacing:-3.2px;text-transform:uppercase}
-.onoff .san{font-variation-settings:"wdth" var(--wdth,93);font-weight:750;font-size:clamp(64px,7.2vw,104px);line-height:.82;letter-spacing:-3.7px;text-transform:uppercase}
-.onoff p{max-width:380px;margin:26px auto 22px}
-.tile{width:55px;height:55px;border-radius:8px;background:var(--red);display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;transition:transform .5s var(--ease)}
-.tile:hover{transform:translate(3px,-3px)}
-.bleed{position:absolute;z-index:1;pointer-events:none;will-change:transform}
-.bleed.l{left:-6vw;bottom:-6vh;height:85vh}.bleed.r{right:-8vw;top:6vh;height:80vh}
-.bleed img{height:100%;width:auto}
+.onoff{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16vh 4vw;overflow:hidden}
+.onoff .pair{position:relative;z-index:2;display:flex;align-items:flex-start;justify-content:center;gap:clamp(30px,5vw,96px)}
+.onoff .col{position:relative;z-index:2;display:flex;flex-direction:column;max-width:min(30vw,420px)}
+.onoff .col.l{align-items:flex-end;text-align:right}.onoff .col.r{align-items:flex-start;text-align:left}
+.onoff .ttl{position:relative}
+.onoff .ser{font-family:var(--serif);font-weight:500;font-size:clamp(64px,7.4vw,124px);line-height:.8;letter-spacing:-.04em;text-transform:uppercase}
+.onoff .san{font-variation-settings:"wdth" var(--wdth,93);font-weight:800;font-size:clamp(64px,7.4vw,124px);line-height:.84;letter-spacing:-.045em;text-transform:uppercase}
+.onoff .brushw{position:absolute;left:30%;top:-4%;font-family:var(--brush);color:var(--red);font-size:clamp(70px,8vw,140px);line-height:1;transform:rotate(-14deg);pointer-events:none;white-space:nowrap;z-index:3}
+.onoff p{font-size:clamp(16px,1.3vw,21px);line-height:1.25;margin:clamp(22px,4vh,44px) 0 clamp(18px,3vh,30px);max-width:340px}
+.tile{width:66px;height:66px;border-radius:8px;background:var(--red);display:flex;align-items:center;justify-content:center;color:#fff;transition:transform .5s var(--ease)}
+.tile svg{width:22px;height:22px}
+.tile:hover{transform:translateY(-3px)}
+.bleed{position:absolute;z-index:1;pointer-events:none;mix-blend-mode:multiply;bottom:0;height:min(100vh,1100px)}
+.bleed.l{left:0}.bleed.r{right:0}
+.bleed img,.bleed video{height:100%;width:auto;display:block}
+.bleed.l img,.bleed.l video{margin-left:-9vw}.bleed.r img,.bleed.r video{margin-right:-9vw}
+@media (max-width:900px){.onoff .pair{flex-direction:column;align-items:center;gap:12vh}.onoff .col{max-width:80vw}.onoff .col.l,.onoff .col.r{align-items:center;text-align:center}.bleed{height:55vh;top:50%;bottom:auto;margin-top:-27vh;opacity:.45}.bleed.l img,.bleed.l video{margin-left:-30vw}.bleed.r img,.bleed.r video{margin-right:-30vw}}
 /* ---------- full bleed ---------- */
 .fullbleed{height:110vh;overflow:hidden;position:relative}
 .fullbleed img{position:absolute;inset:-10% 0;width:100%;height:120%;object-fit:cover}
@@ -195,7 +202,7 @@ footer{padding:18px;background:radial-gradient(circle at 50% -190%,rgba(227,30,3
 .fport{aspect-ratio:3/4;overflow:hidden;border-radius:0}
 .fport img{width:100%;height:100%;object-fit:cover;filter:grayscale(1)}
 .flegal{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:8vh;padding-top:18px;border-top:1px solid var(--tarmac);font-size:12px;color:var(--lichen)}
-@media (max-width:900px){.fcols{grid-template-columns:1fr 1fr}.onoff{grid-template-columns:1fr}.bleed{opacity:.35}}
+@media (max-width:900px){.fcols{grid-template-columns:1fr 1fr}}
 .note{position:fixed;left:18px;bottom:18px;z-index:85;background:rgba(22,22,22,.85);color:#aaa;border:1px solid var(--tarmac);padding:7px 10px;font-size:10px;border-radius:8px}
 
 .notopo .topoD,.notopo .topoL,.topoanim .topoD,.topoanim .topoL{background-image:none!important}
@@ -258,8 +265,10 @@ const R={
  story:d=>`<section id="story" class="topoD"><div class="strack" id="strack">${(d.items||[]).map(it=>it.type==='quote'
    ?`<div class="quote"><p>${md(it.text)}</p><svg viewBox="0 0 120 40"><path d="M4 30 C 30 4, 50 4, 40 26 C 34 38, 70 10, 80 20 C 88 28, 100 12, 116 16"/></svg></div>`
    :`<div class="frag${it.duotone?' duo':''}" style="width:${+it.width||300}px;margin-top:${+it.offset||0}vh" data-sp="${+it.speed||1}"><span class="cap">${esc(it.caption)}</span><img src="${src(it.img)}" alt="" style="height:${+it.height||340}px;max-height:70vh"></div>`).join('')}</div></section>`,
- gioco:d=>{const c=x=>`<div class="col"><div class="ser">${esc(x.top)}</div><div class="san">${esc(x.bottom)}</div><p>${md(x.text)}</p><a class="tile" href="${esc(x.link||'#')}">↗</a></div>`;
-   return `<section class="onoff cream topoL" id="gioco">${d.img_left?`<div class="bleed l" data-sp="-12"><img src="${src(d.img_left)}" alt=""></div>`:''}${d.img_right?`<div class="bleed r" data-sp="14"><img src="${src(d.img_right)}" alt=""></div>`:''}${c(d.left||{})}${c(d.right||{})}</section>`},
+ gioco:d=>{const arrL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-2"/></svg>',arrR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 14 5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h2"/></svg>';
+   const c=(x,side)=>`<div class="col ${side}"><div class="ttl"><div class="ser">${esc(x.top)}</div><div class="san">${esc(x.bottom)}</div>${side==='l'&&d.brush_word?`<div class="brushw" id="brushw">${esc(d.brush_word)}</div>`:''}</div><p>${md(x.text)}</p><a class="tile" href="${esc(x.link||'#')}">${side==='l'?arrL:arrR}</a></div>`;
+   const m=(img,vid,side,sp)=>(img||vid)?`<div class="bleed ${side}" data-sp="${sp}">${vid?`<video src="${src(vid)}" poster="${src(img)}" autoplay muted loop playsinline></video>`:`<img src="${src(img)}" alt="">`}</div>`:'';
+   return `<section class="onoff cream topoL" id="gioco">${m(d.img_left,d.video_left,'l',-6)}${m(d.img_right,d.video_right,'r',6)}<div class="pair">${c(d.left||{},'l')}${c(d.right||{},'r')}</div></section>`},
  fullbleed:d=>`<section class="fullbleed"><img id="fbImg" src="${src(d.img)}" alt="" style="object-position:center 20%"><div class="over"><div class="san">${md(d.line1)}</div><div class="san">${md(d.line2)}</div></div></section>`,
  hof:d=>{const it=d.items||[];const cols=[[],[],[],[]];it.forEach((x,i)=>cols[i%4].push(x));
    return `<section class="hof" id="hof"><div class="head"><div class="cap" style="margin-bottom:18px;color:var(--lichen)">${esc(d.eyebrow)}</div><div class="t">${md(d.title)}</div></div>
@@ -413,7 +422,7 @@ if($('#hchar'))(function(){
  function sample(){if(!geo)return false;sx.clearRect(0,0,cols,rows);try{sx.drawImage(img,geo[0],geo[1],geo[2],geo[3])}catch(e){return false}
   let d;try{d=sx.getImageData(0,0,cols,rows).data}catch(e){console.warn('codice: immagine non leggibile',e);return false}
   for(let j=0,n=0;j<rows;j++)for(let i=0;i<cols;i++,n++){const k=n*4,R=d[k]/255,G=d[k+1]/255,B=d[k+2]/255,L=.3*R+.59*G+.11*B;
-   const red=R>.25&&R>G*1.6&&R>B*1.6;const c=cells[n]||(cells[n]={x:i*fs*.62,y:j*fs});c.L=L;c.red=red;c.a=red?Math.min(1,.6+R):(L<.03?.13:Math.min(1,.3+L*2.2))}
+   const red=R>.25&&R>G*1.6&&R>B*1.6;const c=cells[n]||(cells[n]={x:i*fs*.62,y:j*fs});c.L=L;c.red=red;c.a=red?Math.min(1,.6+R):(L<.03?.26:Math.min(1,.4+L*2.2))}
   return true}
  function build(){const nw=img.naturalWidth||img.videoWidth,nh=img.naturalHeight||img.videoHeight;if(!nw)return;W=wrap.clientWidth;Hh=wrap.clientHeight;
   [cv,oc,mk].forEach(c=>{c.width=W*dpr;c.height=Hh*dpr});[ctx,ox,mx2].forEach(c=>c.setTransform(dpr,0,0,dpr,0,0));
@@ -509,7 +518,9 @@ if($('#strack')){
 }
 /* IN/FUORI GIOCO */
 document.querySelectorAll('.bleed').forEach(b=>gsap.fromTo(b,{yPercent:+b.dataset.sp},{yPercent:-b.dataset.sp,ease:'none',scrollTrigger:{trigger:'.onoff',start:'top bottom',end:'bottom top',scrub:true}}));
-if($('.onoff'))gsap.from('.onoff .col>*',{y:80,opacity:0,stagger:.08,duration:.75,ease:LE,scrollTrigger:{trigger:'.onoff',start:'top 60%'}});
+if($('.onoff')){gsap.from('.onoff .col .ser,.onoff .col .san,.onoff .col p,.onoff .col .tile',{y:80,opacity:0,stagger:.06,duration:.8,ease:LE,scrollTrigger:{trigger:'.onoff',start:'top 60%'}});
+ if($('#brushw'))gsap.fromTo('#brushw',{clipPath:'inset(0 100% 0 0)'},{clipPath:'inset(0 0% 0 0)',duration:1.1,ease:'power2.inOut',delay:.5,scrollTrigger:{trigger:'.onoff',start:'top 55%'}});
+ document.querySelectorAll('.bleed').forEach(b=>gsap.from(b,{xPercent:b.classList.contains('l')?-30:30,opacity:0,duration:1.2,ease:'expo.out',scrollTrigger:{trigger:'.onoff',start:'top 70%'}}))}
 /* FULL BLEED */
 if($('#fbImg')){gsap.fromTo('#fbImg',{yPercent:-8,scale:1.15},{yPercent:8,scale:1,ease:'none',scrollTrigger:{trigger:'.fullbleed',start:'top bottom',end:'bottom top',scrub:true}});
  gsap.from('.fullbleed .san',{yPercent:100,opacity:0,stagger:.12,duration:.75,ease:LE,scrollTrigger:{trigger:'.fullbleed',start:'top 40%'}})}
