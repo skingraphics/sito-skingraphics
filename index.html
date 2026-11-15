@@ -385,7 +385,7 @@ if($('#hero')&&FX.hero_3d!==false&&window.THREE)(function(){
  const wb=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(W+.08,31*k,D+.08)),wmat);wb.position.y=top-31*k/2;bang.add(wb);
  const wd=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(W+.08,7.6*k,D+.08)),wmat);wd.position.y=parts[n].y+7.6*k/2;bang.add(wd);
  bang.scale.setScalar(mobile?1:1.15);
- scene.add(new THREE.AmbientLight(0xffffff,.45));const d1=new THREE.DirectionalLight(0xffffff,2.2);d1.position.set(4,6,8);scene.add(d1);
+ if(dk)r.toneMappingExposure=.8;scene.add(new THREE.AmbientLight(0xffffff,dk?.2:.45));const d1=new THREE.DirectionalLight(0xffffff,dk?.9:2.2);d1.position.set(4,6,8);scene.add(d1);
  const d2=new THREE.DirectionalLight(0xff3a3a,2.4);d2.position.set(6,-4,-2);scene.add(d2);const rim=new THREE.DirectionalLight(0xffffff,1.2);rim.position.set(-8,4,-6);scene.add(rim);
  const tl=gsap.timeline({delay:.2});tl.to(wmat,{opacity:.6,duration:.8});
  pieces.forEach((m,i)=>{tl.to(m.position,{x:0,y:m.userData.fy,z:0,duration:1.4,ease:'expo.out'},.4+i*.12);tl.to(m.rotation,{x:0,y:0,z:0,duration:1.4,ease:'expo.out'},.4+i*.12)});
