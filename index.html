@@ -7,6 +7,7 @@
 <meta name="robots" content="noindex,nofollow">
 <title>Skingraphics</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kaushan+Script&display=swap">
 <style>
 :root{
  --ink:#161616;      /* = Paddock Olive: canvas scuro */
@@ -128,8 +129,9 @@ body.ondark-logo .wm img{filter:none}
 .onoff .ttl{position:relative}
 .onoff .ser{font-family:var(--serif);font-weight:500;font-size:clamp(64px,7.4vw,124px);line-height:.8;letter-spacing:-.04em;text-transform:uppercase}
 .onoff .san{font-variation-settings:"wdth" var(--wdth,93);font-weight:800;font-size:clamp(64px,7.4vw,124px);line-height:.84;letter-spacing:-.045em;text-transform:uppercase}
-.onoff .brushw{position:absolute;left:30%;top:-4%;font-family:var(--brush);color:var(--red);font-size:clamp(70px,8vw,140px);line-height:1;transform:rotate(-14deg);pointer-events:none;white-space:nowrap;z-index:3}
-.onoff p{font-size:clamp(16px,1.3vw,21px);line-height:1.25;margin:clamp(22px,4vh,44px) 0 clamp(18px,3vh,30px);max-width:340px}
+.onoff .brushw{position:absolute;left:18%;top:8%;font-family:"Kaushan Script",var(--brush);color:var(--red);font-size:clamp(60px,6.6vw,118px);line-height:1;transform:rotate(-12deg);pointer-events:none;white-space:nowrap;z-index:3;text-transform:none}
+.onoff p{font-size:clamp(16px,1.3vw,21px);line-height:1.25;margin:clamp(22px,4vh,44px) 0 clamp(18px,3vh,30px);max-width:340px;min-height:5em}
+@media (max-width:900px){.onoff p{min-height:0}}
 .tile{width:66px;height:66px;border-radius:8px;background:var(--red);display:flex;align-items:center;justify-content:center;color:#fff;transition:transform .5s var(--ease)}
 .tile svg{width:22px;height:22px}
 .tile:hover{transform:translateY(-3px)}
