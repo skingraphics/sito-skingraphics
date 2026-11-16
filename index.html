@@ -701,7 +701,7 @@ if(cards.length){cards.forEach((c,i)=>{c.style.zIndex=10-Math.abs(i-mid);gsap.se
  ScrollTrigger.create({trigger:'#deck',start:'top 75%',once:true,onEnter:fan});
  let fanned=false;const base=i=>{const d=i-mid,flat=FX.social_fan===false;return{rotate:flat?0:d*11,x:d*(flat?(mobile?60:180):(mobile?18:42)),y:Math.abs(d)*18,scale:d===0?1.08:1}};
  const focus=k=>{if(!fanned)return;cards.forEach((c,i)=>{const d=i-k,b=base(i);c.style.zIndex=i===k?60:40-Math.abs(d);c.classList.toggle('on',i===k);
-  gsap.to(c,i===k?{rotate:0,x:b.x,y:-40,scale:1.16,duration:.55,ease:'expo.out',overwrite:'auto'}:{rotate:b.rotate*.8+(d<0?-4:4),x:b.x+(d<0?-1:1)*(mobile?40:90+Math.abs(d)*14),y:b.y+24,scale:.94,duration:.55,ease:'expo.out',overwrite:'auto'})})};
+  gsap.to(c,i===k?{rotate:0,x:b.x,y:-18,scale:1.12,duration:.55,ease:'expo.out',overwrite:'auto'}:{rotate:b.rotate*.8+(d<0?-4:4),x:b.x+(d<0?-1:1)*(mobile?40:90+Math.abs(d)*14),y:b.y+24,scale:.94,duration:.55,ease:'expo.out',overwrite:'auto'})})};
  const reset=()=>{if(!fanned)return;cards.forEach((c,i)=>{c.style.zIndex=10-Math.abs(i-mid);c.classList.remove('on');gsap.to(c,{...base(i),duration:.6,ease:'expo.out',overwrite:'auto'})})};
  cards.forEach((c,i)=>{c.addEventListener('pointerenter',e=>{if(e.pointerType!=='touch')focus(i)});c.addEventListener('click',()=>focus(i))});
  $('#deck').addEventListener('pointerleave',reset);
