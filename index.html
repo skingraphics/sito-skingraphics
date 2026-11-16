@@ -75,9 +75,12 @@ body.ondark-logo .wm img{filter:none}
 .ticket .badge{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
 .ticket .badge b{font-size:26px;font-family:var(--serif)}
 .hint{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);color:var(--ink);z-index:4;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;letter-spacing:.12em}
-.slogan{position:absolute;left:50%;top:54%;transform:translate(-50%,-50%);z-index:4;pointer-events:none;width:max-content;max-width:92vw;text-align:center;color:var(--fog);font-variation-settings:"wdth" var(--wdth,93);font-weight:750;text-transform:uppercase;font-size:clamp(40px,6.4vw,112px);line-height:.92;letter-spacing:-.025em;text-shadow:0 6px 60px rgba(0,0,0,.8)}
+.hcenter{position:absolute;left:50%;top:54%;transform:translate(-50%,-50%);z-index:4;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:34px}
+.hcenter.noslogan{top:auto;bottom:14px;transform:translateX(-50%)}
+.hcenter .hint{position:static;transform:none;color:var(--fog)}
+.slogan{width:max-content;max-width:92vw;text-align:center;color:var(--fog);font-variation-settings:"wdth" var(--wdth,93);font-weight:750;text-transform:uppercase;font-size:clamp(40px,6.4vw,112px);line-height:.92;letter-spacing:-.025em;text-shadow:0 6px 60px rgba(0,0,0,.8)}
 .slogan .serif{font-family:var(--serif);font-style:italic;text-transform:none;font-weight:500;color:var(--red);letter-spacing:-.01em}
-@media (max-width:900px){.slogan{top:56%;width:90vw;font-size:clamp(34px,11vw,56px)}}
+@media (max-width:900px){.hcenter{top:56%;gap:26px}.slogan{width:90vw;font-size:clamp(34px,11vw,56px)}}
 .hint i{display:block;width:1px;height:42px;background:linear-gradient(currentColor,currentColor) no-repeat;background-size:100% 40%;animation:scrl 1.8s var(--ease) infinite;opacity:.8}
 @keyframes scrl{0%{background-position:0 -20px}100%{background-position:0 46px}}
 .corner{position:absolute;left:22px;bottom:22px;z-index:4;color:var(--fog);font-size:11px;letter-spacing:.12em;line-height:1.5;max-width:130px}
@@ -291,7 +294,7 @@ const R={
    ${d.corner_text?`<div class="corner cap" id="ticket">${md(d.corner_text)}</div>`:''}<div class="ticket cap" id="ticket2" style="${d.corner_text?'display:none':''}"><span class="tab">${esc(d.ticket_tab)}</span>
     <svg viewBox="0 0 140 46" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="4" width="136" height="38" rx="4"/><rect x="10" y="10" width="36" height="26"/><rect x="52" y="10" width="36" height="26"/><rect x="94" y="10" width="36" height="26"/><g fill="var(--red)" stroke="none" font-family="Arial" font-weight="700" font-size="18"><text x="22" y="30">7</text><text x="64" y="30">7</text><text x="106" y="30">7</text></g></svg>
     <div>${esc(d.ticket_text)}</div><hr><div class="badge"><b>!</b>${esc(d.ticket_badge)}</div></div>
-   ${d.slogan?`<div class="slogan">${md(d.slogan)}</div>`:''}<div class="hint cap"><span>${esc(d.hint)}</span><i></i></div></div>
+   <div class="hcenter${d.slogan?'':' noslogan'}">${d.slogan?`<div class="slogan">${md(d.slogan)}</div>`:''}<div class="hint cap"><span>${esc(d.hint)}</span><i></i></div></div></div>
   <div class="msg-label cap" id="msgLbl">${esc(d.message_label)}</div>
   <svg id="sign" viewBox="0 0 700 520"><path id="signPath" d="M120 400 C 260 330, 520 160, 560 120 C 600 80, 470 110, 380 170 C 250 260, 110 380, 140 420 C 170 460, 330 360, 420 300 C 470 265, 430 330, 400 380 C 380 415, 430 400, 470 360 C 500 330, 520 300, 500 340 C 480 380, 520 380, 560 330 M 330 60 L 250 470"/></svg>
  </section>`,
