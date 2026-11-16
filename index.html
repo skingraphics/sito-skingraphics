@@ -292,20 +292,20 @@ footer{padding:18px;background:radial-gradient(circle at 50% -190%,rgba(227,30,3
 .fsig .sfill{fill:var(--red);stroke:var(--red);stroke-width:.35}.fsig path.sp{fill:none;stroke:var(--red);stroke-width:5.5;stroke-linecap:round}
 .fstage{position:relative;flex:1;min-height:clamp(380px,56vh,620px);margin-top:3vh}
 .fcrew{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:center;align-items:flex-end;pointer-events:none}
-.fm{pointer-events:auto;position:relative;margin:0 calc(-1 * clamp(8px,1vw,20px));height:calc(clamp(300px,50vh,560px) * (1 - var(--a) * .16));aspect-ratio:3/4;overflow:hidden;border-radius:16px 16px 0 0;z-index:calc(20 - var(--a));transform:rotate(calc(var(--k) * 1.5deg));transform-origin:50% 100%;transition:transform .6s var(--ease),filter .5s;filter:grayscale(1) brightness(calc(1 - var(--a) * .14));box-shadow:0 -10px 60px rgba(0,0,0,.6)}
-.fm img{width:100%;height:100%;object-fit:cover;object-position:center 18%}
-.fm.lead{z-index:30;filter:grayscale(1);box-shadow:0 -20px 90px rgba(227,30,36,.25)}
-.fm figcaption{position:absolute;left:10px;right:10px;bottom:10px;font-size:10.5px;line-height:1.3;color:var(--fog);background:rgba(10,10,10,.6);backdrop-filter:blur(6px);border-radius:8px;padding:7px 9px;opacity:0;transform:translateY(8px);transition:.4s}
+.fm{pointer-events:auto;position:relative;margin:0 calc(-1 * clamp(18px,2.6vw,52px));height:calc(clamp(320px,56vh,640px) * (1 - var(--a) * .1));z-index:calc(20 - var(--a));transform-origin:50% 100%;transition:transform .6s var(--ease),filter .5s;filter:brightness(calc(1 - var(--a) * .13)) saturate(calc(1 - var(--a) * .12)) drop-shadow(0 -6px 30px rgba(0,0,0,.55))}
+.fm img{height:100%;width:auto;display:block;object-fit:contain;object-position:bottom}
+.fm.lead{z-index:30;filter:drop-shadow(0 0 60px rgba(227,30,36,.35))}
+.fm figcaption{position:absolute;left:50%;bottom:16px;transform:translate(-50%,8px);white-space:nowrap;font-size:10.5px;line-height:1.3;color:var(--fog);background:rgba(10,10,10,.7);backdrop-filter:blur(6px);border-radius:8px;padding:7px 11px;opacity:0;transition:.4s;text-align:center}
 .fm figcaption b{display:block;font-size:12.5px;text-transform:uppercase}
-.fm:hover{filter:grayscale(0);transform:translateY(-12px) rotate(0deg);z-index:40}
-.fm:hover figcaption{opacity:1;transform:none}
+.fm:hover{filter:brightness(1.05) drop-shadow(0 0 50px rgba(227,30,36,.35));transform:translateY(-10px);z-index:40}
+.fm:hover figcaption{opacity:1;transform:translate(-50%,0)}
 .fside{position:absolute;top:44%;transform:translateY(-50%);text-align:center;z-index:45;display:flex;flex-direction:column;gap:4vh}
 .fside.l{left:3vw}.fside.r{right:3vw}
 .fside h6{font-size:9.5px;font-weight:400;text-transform:uppercase;color:var(--lichen);margin-bottom:12px}
 .fside a{display:block;font-size:clamp(20px,1.8vw,30px);font-weight:800;text-transform:uppercase;line-height:1.12;color:var(--fog)}
 .fside a:hover{color:var(--red)}.fside a.fmail{font-size:clamp(14px,1.1vw,18px);text-transform:none;margin-top:4px}
 .lando .flegal{margin-top:0;position:relative;z-index:46;background:var(--ink)}
-@media (max-width:900px){.fpanel.lando{min-height:0;padding:12vh 5vw 3vh}.fsig{width:46vw;top:-80%;left:40%}.fstage{min-height:0;display:flex;flex-direction:column}.fcrew{position:relative;order:2;margin-top:5vh}.fm{height:calc(34vw * (1 - var(--a) * .16));margin:0 -2.5vw}.fm figcaption{display:none}.fside{position:static;transform:none;order:1;flex-direction:row;justify-content:space-around;text-align:left;margin-top:6vh;gap:6vw}.fside.r{margin-top:4vh}.fside a{font-size:20px}}
+@media (max-width:900px){.fpanel.lando{min-height:0;padding:12vh 5vw 3vh}.fsig{width:46vw;top:-80%;left:40%}.fstage{min-height:0;display:flex;flex-direction:column}.fcrew{position:relative;order:2;margin-top:5vh}.fm{height:calc(46vw * (1 - var(--a) * .1));margin:0 -6vw}.fm figcaption{display:none}.fside{position:static;transform:none;order:1;flex-direction:row;justify-content:space-around;text-align:left;margin-top:6vh;gap:6vw}.fside.r{margin-top:4vh}.fside a{font-size:20px}}
 .flegal{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:8vh;padding-top:18px;border-top:1px solid var(--tarmac);font-size:12px;color:var(--lichen)}
 @media (max-width:900px){.fcols{grid-template-columns:1fr 1fr}}
 .note{position:fixed;left:18px;bottom:18px;z-index:85;background:rgba(22,22,22,.85);color:#aaa;border:1px solid var(--tarmac);padding:7px 10px;font-size:10px;border-radius:8px}
@@ -434,7 +434,7 @@ const ANCH={hero:'#hero',manifesto:'#manifesto',story:'#story',gioco:'#gioco',ho
 function renderFooter(d){
   const tm=d.team||[],ci=tm.length?Math.min(tm.length-1,Math.max(0,d.team_center??Math.floor(tm.length/2))):0;
   const sg=d.show_signature===false?'':signSVG(window.__HERO||{}).replace('id="sign"','id="fsign"').replace(/sgM/g,'fsgM').replace(/sgG/g,'fsgG').replace('id="sgR"','id="fsgR"');
-  const crew=tm.length?`<div class="fcrew" id="fcrew">${tm.map((p,i)=>{const k=i-ci;return `<figure class="fm${k===0?' lead':''}" style="--k:${k};--a:${Math.abs(k)}"><img src="${src(p.img)}" alt="${esc(p.name)}" loading="lazy"><figcaption><b>${esc(p.name)}</b>${esc(p.role||'')}</figcaption></figure>`}).join('')}</div>`:(d.portrait?`<div class="fcrew"><figure class="fm lead" style="--k:0;--a:0"><img src="${src(d.portrait)}" alt=""></figure></div>`:'');
+  const crew=tm.length?`<div class="fcrew" id="fcrew">${tm.map((p,i)=>{const k=i-ci;return `<figure class="fm${k===0?' lead':''}" style="--k:${k};--a:${Math.abs(k)}"><img src="${src(p.img)}" alt="${esc(p.name)}" loading="lazy">${p.name?`<figcaption><b>${esc(p.name)}</b>${esc(p.role||'')}</figcaption>`:''}</figure>`}).join('')}</div>`:(d.portrait?`<div class="fcrew"><figure class="fm lead" style="--k:0;--a:0"><img src="${src(d.portrait)}" alt=""></figure></div>`:'');
   document.getElementById('footer').innerHTML=`<div class="fpanel topoD lando"><div class="ftop"><div class="big">${md(d.title)}</div>${sg?`<div class="fsig">${sg}</div>`:''}</div>
    <div class="fstage">${crew}<div class="fside l">${(d.columns||[]).map(c=>`<div><h6>${esc(c.title)}</h6>${(c.links||[]).map(l=>`<a href="${esc(l.href)}">${esc(l.label)}</a>`).join('')}</div>`).join('')}</div><div class="fside r">
    <div><h6>${esc(d.contact_title)}</h6><a href="tel:${esc((d.phone||'').replace(/\s/g,''))}">${esc(d.phone)}</a><a href="mailto:${esc(d.email)}" class="fmail">${esc(d.email)}</a></div>
