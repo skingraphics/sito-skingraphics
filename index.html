@@ -681,7 +681,7 @@ if($('#stage')&&$('.tour'))(function(){const sec=$('.tour'),shots=[...document.q
   if(b){tl.fromTo(b,{clipPath:'inset(100% 0 0 0)',scale:1.06},{clipPath:'inset(0% 0 0 0)',scale:1,duration:1,ease:'power2.inOut'},i-1);if(a)tl.to(a,{scale:.94,filter:'brightness(.45)',duration:1,ease:'power2.inOut'},i-1)}
   else{const last=shots[shots.length-1];if(last)tl.to(last,{filter:'brightness(.3) blur(2px)',duration:1},i-1);tl.to(phones,{opacity:1,y:0,duration:1,stagger:.15,ease:'power3.out'},i-1)}
   tl.addLabel('s'+i,i)}
- addEventListener('load',()=>ScrollTrigger.refresh());const mph=$('#mph'),strip=$('#strip');if(mph){const pos=[{xPercent:0,yPercent:0,rotation:-6},{xPercent:440,yPercent:-30,rotation:6},{xPercent:-20,yPercent:-55,rotation:-3}];
+ addEventListener('load',()=>ScrollTrigger.refresh());const mph=$('#mph'),strip=$('#strip');if(mph){const pos=[{xPercent:0,yPercent:0,rotation:-6},{xPercent:400,yPercent:-8,rotation:6},{xPercent:190,yPercent:6,rotation:0}];
   for(let i=1;i<n;i++){if(i<n-1||shots[i])tl.to(mph,{...(pos[i]||pos[i%3]),duration:1,ease:'power2.inOut'},i-1);else tl.to(mph,{opacity:0,yPercent:40,duration:.6,ease:'power2.in'},i-1)}
   if(strip)tl.fromTo(strip,{y:0},{y:()=>-Math.max(0,strip.scrollHeight-strip.parentNode.clientHeight),duration:Math.max(1,n-1.4),ease:'none',immediateRender:false},0)}
  lis.forEach((l,i)=>l.onclick=()=>{const s=tl.scrollTrigger,y=s.start+(s.end-s.start)*(i/(n-1));lenis?lenis.scrollTo(y):scrollTo({top:y,behavior:'smooth'})});
