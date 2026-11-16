@@ -674,7 +674,7 @@ if($('#stage')&&$('.tour'))(function(){const sec=$('.tour'),shots=[...document.q
  if(mobile||n<2)return;
  const st=$('#stage');st.addEventListener('mousemove',e=>{const r=st.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;st.style.setProperty('--gx',x*100+'%');st.style.setProperty('--gy',y*100+'%');gsap.to('#bw',{rotateY:-8+(x-.5)*10,rotateX:4-(y-.5)*8,duration:.8,ease:'power2.out',overwrite:'auto'})});
  const setStep=i=>{lis.forEach((l,j)=>l.classList.toggle('on',j===i));if(cur)cur.textContent='0'+(i+1)};
- const tl=gsap.timeline({defaults:{ease:'none'},scrollTrigger:{trigger:sec,start:'top top',end:()=>'+='+innerHeight*(n-.2)*1.1,pin:true,scrub:1,invalidateOnRefresh:true,snap:{snapTo:'labels',duration:{min:.25,max:.7},delay:.08,ease:'power2.inOut'},
+ const tl=gsap.timeline({defaults:{ease:'none'},scrollTrigger:{trigger:sec,start:'top top',end:()=>'+='+innerHeight*(n-.2)*1.1,pin:true,scrub:1,invalidateOnRefresh:true,snap:{snapTo:'labelsDirectional',duration:{min:.3,max:.8},delay:.08,ease:'power2.inOut'},
   onUpdate:self=>{const t=Math.min(n-1,self.progress*(n-1));const i=Math.min(n-1,Math.round(t));setStep(i);lis.forEach((l,j)=>l.style.setProperty('--p',Math.max(0,Math.min(1,t-j+1))*100+'%'))}}});
  tl.addLabel('s0',0);
  for(let i=1;i<n;i++){const a=shots[i-1],b=shots[i];
