@@ -238,6 +238,15 @@ body.ondark-logo .wm img{filter:none}
  .mphones{display:flex;gap:10px;padding:0 6vw}.mphones img{flex:1;min-width:0;border-radius:12px;box-shadow:0 0 0 3px #111,0 0 0 4px rgba(255,255,255,.15)}
  .phones,.tour .counter{display:none}
 }
+@media (min-width:901px){
+ .tour .txt{align-items:flex-end;text-align:right;padding:12vh 4vw 8vh 3vw}
+ .tour .eb{justify-content:flex-end}
+ .tour p{margin-left:auto}
+ .tour .steps{width:100%;margin-left:auto}
+ .tour .steps li{padding:12px 46px 12px 0}
+ .tour .steps li:before{left:auto;right:0}
+ .tour .steps li:after{left:auto;right:0}
+}
 @media (min-width:901px){.mstep,.mphones{display:none}}
 /* ---------- partner ---------- */
 .partners{padding:18vh 0 16vh;position:relative;overflow:hidden;text-align:center}
@@ -342,7 +351,7 @@ async function loadContent(){
 }
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const md=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\*(.+?)\*/g,'<span class="serif">$1</span>');
-const src=u=>esc(u||'');
+const src=u=>esc(u&&/^img\//.test(u)&&!u.includes('?')?u+'?v=3':(u||''));
 
 /* =================== RENDER SEZIONI =================== */
 const R={
