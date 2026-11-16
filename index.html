@@ -269,8 +269,9 @@ body.ondark-logo .wm img{filter:none}
 .social .t{font-variation-settings:"wdth" var(--wdth,93);font-weight:750;font-size:clamp(46px,4.6vw,67px);letter-spacing:-1.85px;text-transform:uppercase;line-height:1}
 .social .t .serif{color:var(--red)}
 .deck{position:relative;height:calc(min(23vw,300px)*16/9 + 90px);margin-top:9vh}
-.dc{position:absolute;left:50%;bottom:0;width:min(23vw,300px);aspect-ratio:9/16;border-radius:22px;overflow:hidden;transform-origin:50% 150%;transition:transform .8s var(--ease)}
+.dc{position:absolute;left:50%;bottom:0;width:min(23vw,300px);aspect-ratio:9/16;border-radius:22px;overflow:hidden;transform-origin:50% 150%;transition:box-shadow .4s}
 .dc img{width:100%;height:100%;object-fit:cover;object-position:center 25%}
+.dc{cursor:pointer;box-shadow:0 20px 50px rgba(0,0,0,.25)}.dc.on{box-shadow:0 40px 90px rgba(0,0,0,.45),0 0 0 3px var(--red)}
 .dc .who{position:absolute;left:12px;bottom:12px;right:12px;background:rgba(22,22,22,.7);backdrop-filter:blur(6px);color:var(--cream);border-radius:10px;padding:8px 10px;font-size:12px;text-align:left}
 @media (max-width:900px){.dc{width:46vw;border-radius:16px}.deck{height:calc(46vw*16/9 + 60px);margin-top:6vh}.social{padding:12vh 4vw 14vh}}
 /* ---------- footer ---------- */
@@ -698,7 +699,13 @@ const cards=[...document.querySelectorAll('.dc')];const mid=(cards.length-1)/2;
 if(cards.length){cards.forEach((c,i)=>{c.style.zIndex=10-Math.abs(i-mid);gsap.set(c,{xPercent:-50,rotate:0,y:60,opacity:0})});
  const fan=()=>cards.forEach((c,i)=>{const d=i-mid;gsap.to(c,{rotate:FX.social_fan===false?0:d*11,x:d*(FX.social_fan===false?(mobile?60:180):(mobile?18:42)),y:Math.abs(d)*18,scale:d===0?1.08:1,opacity:1,duration:1,delay:Math.abs(d)*.06,ease:'expo.out'})});
  ScrollTrigger.create({trigger:'#deck',start:'top 75%',once:true,onEnter:fan});
- cards.forEach((c,i)=>{c.addEventListener('pointerenter',()=>gsap.to(c,{y:'-=30',duration:.4}));c.addEventListener('pointerleave',()=>gsap.to(c,{y:Math.abs(i-mid)*18,duration:.4}))})}
+ let fanned=false;const base=i=>{const d=i-mid,flat=FX.social_fan===false;return{rotate:flat?0:d*11,x:d*(flat?(mobile?60:180):(mobile?18:42)),y:Math.abs(d)*18,scale:d===0?1.08:1}};
+ const focus=k=>{if(!fanned)return;cards.forEach((c,i)=>{const d=i-k,b=base(i);c.style.zIndex=i===k?60:40-Math.abs(d);c.classList.toggle('on',i===k);
+  gsap.to(c,i===k?{rotate:0,x:b.x,y:-40,scale:1.16,duration:.55,ease:'expo.out',overwrite:'auto'}:{rotate:b.rotate*.8+(d<0?-4:4),x:b.x+(d<0?-1:1)*(mobile?40:90+Math.abs(d)*14),y:b.y+24,scale:.94,duration:.55,ease:'expo.out',overwrite:'auto'})})};
+ const reset=()=>{if(!fanned)return;cards.forEach((c,i)=>{c.style.zIndex=10-Math.abs(i-mid);c.classList.remove('on');gsap.to(c,{...base(i),duration:.6,ease:'expo.out',overwrite:'auto'})})};
+ cards.forEach((c,i)=>{c.addEventListener('pointerenter',e=>{if(e.pointerType!=='touch')focus(i)});c.addEventListener('click',()=>focus(i))});
+ $('#deck').addEventListener('pointerleave',reset);
+ ScrollTrigger.create({trigger:'#deck',start:'top 75%',once:true,onEnter:()=>gsap.delayedCall(1.4,()=>fanned=true)})}
 /* FOOTER */
 gsap.from('.fpanel .big',{yPercent:60,opacity:0,duration:.9,ease:LE,scrollTrigger:{trigger:'footer',start:'top 75%'}});
 gsap.from('.fcols>*',{y:50,opacity:0,stagger:.08,duration:.75,ease:LE,scrollTrigger:{trigger:'.fcols',start:'top 90%'}});
