@@ -216,13 +216,13 @@ body.ondark-logo .wm img{filter:none}
 .steps li.on .d{grid-template-rows:1fr;opacity:1}.steps li.on .d>span{padding-top:6px}
 .stage{position:relative;overflow:hidden;background:radial-gradient(ellipse at 55% 45%,#3a080b 0%,#140405 45%,var(--void) 80%);display:flex;align-items:center;justify-content:center}
 .stage:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at var(--gx,60%) var(--gy,40%),rgba(227,30,36,.28),transparent 45%);transition:background .2s}
-.bw{position:relative;width:min(88%,1000px);border-radius:14px;background:#0f0f11;box-shadow:0 50px 120px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.1);transform:perspective(1600px) rotateY(-8deg) rotateX(4deg);transform-style:preserve-3d;will-change:transform}
+.bw{position:relative;width:min(80%,960px);margin-left:-2%;border-radius:14px;background:#0f0f11;box-shadow:0 50px 120px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.1);transform:perspective(1600px) rotateY(-8deg) rotateX(4deg);transform-style:preserve-3d;will-change:transform}
 .bw .bar{height:34px;display:flex;align-items:center;gap:7px;padding:0 14px;border-bottom:1px solid rgba(255,255,255,.07)}
 .bw .bar i{width:10px;height:10px;border-radius:50%;background:#3a3a3e}.bw .bar i:first-child{background:var(--red)}
 .bw .url{margin-left:14px;flex:1;max-width:340px;height:20px;border-radius:6px;background:rgba(255,255,255,.06);font-size:11px;color:rgba(255,255,255,.5);display:flex;align-items:center;padding:0 10px;letter-spacing:.3px}
 .bw .scr{position:relative;aspect-ratio:2.09/1;overflow:hidden;border-radius:0 0 14px 14px;background:#0b0b0d}
-.bw .scr img{position:absolute;left:0;top:0;width:100%;height:auto;clip-path:inset(100% 0 0 0);will-change:clip-path,transform}
-.bw .scr img:first-child{clip-path:inset(0 0 0 0)}
+.bw .scr>img{position:absolute;left:0;top:0;width:100%;height:auto;clip-path:inset(100% 0 0 0);will-change:clip-path,transform}
+.bw .scr>img:first-child{clip-path:inset(0 0 0 0)}
 .phones{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:2.2%;pointer-events:none;transform:translateZ(60px)}
 .phones img{width:19%;border-radius:18px;box-shadow:0 30px 70px rgba(0,0,0,.75),0 0 0 5px #111,0 0 0 6px rgba(255,255,255,.18);opacity:0;transform:translateY(60%)}
 .tour .counter{position:absolute;right:4%;bottom:5%;color:rgba(255,255,255,.55);font-size:12.5px;letter-spacing:2px;font-weight:600}
@@ -232,7 +232,7 @@ body.ondark-logo .wm img{filter:none}
  .tour .txt{padding:12vh 6vw 4vh}.steps{display:none}
  .stage{display:block;padding:6vh 0 8vh}
  .bw{width:92%;margin:0 auto 34px;transform:none}
- .bw .scr img{clip-path:none!important;position:relative;display:none}.bw .scr img:first-child{display:block}.bw .scr{aspect-ratio:auto}
+ .bw .scr>img{clip-path:none!important;position:relative;display:none}.bw .scr>img:first-child{display:block}.bw .scr{aspect-ratio:auto}
  .mstep{padding:0 6vw 30px;color:#fff}.mstep h4{font-size:18px;text-transform:uppercase;margin:0 0 6px}.mstep h4 b{color:var(--red);margin-right:8px}.mstep p{margin:0 0 14px;font-size:14.5px;opacity:.8}
  .mstep img{width:100%;border-radius:10px;box-shadow:0 20px 50px rgba(0,0,0,.6)}
  .mphones{display:flex;gap:10px;padding:0 6vw}.mphones img{flex:1;min-width:0;border-radius:12px;box-shadow:0 0 0 3px #111,0 0 0 4px rgba(255,255,255,.15)}
