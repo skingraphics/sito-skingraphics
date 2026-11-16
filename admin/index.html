@@ -162,6 +162,7 @@ const T=(k,l,h)=>({k,t:'text',l,h}),TA=(k,l,h)=>({k,t:'textarea',l,h}),MD=(k,l)=
 IMG=(k,l)=>({k,t:'image',l}),N=(k,l,h)=>({k,t:'number',l,h}),B=(k,l,h)=>({k,t:'bool',l,h}),C=(k,l)=>({k,t:'color',l}),G=(l,k,f)=>({t:'group',l,k,f}),LIST=(k,l,f,o={})=>({k,t:'list',l,f,...o}),SL=(k,l,h)=>({k,t:'strlist',l,h}),SEL=(k,l,opts,h)=>({k,t:'select',l,opts,h});
 const SCHEMA={
  settings:[
+  G('Chat Crisp','crisp',[T('website_id','Website ID di Crisp','Lo trovi in Crisp → Settings → Workspace settings → Setup & Integrations → HTML. Vuoto = chat spenta'),B('enabled','Chat attiva sul sito')]),
   G('SEO (Google)','seo',[T('title','Titolo della pagina'),TA('description','Descrizione')]),
   G('Logo','logo',[IMG('light','Logo per sfondi chiari'),IMG('dark','Logo per sfondi scuri (negativo)')]),
   G('Barra in alto','nav',[T('cta_label','Testo pulsante rosso'),T('cta_link','Link pulsante','#footer = contatti, oppure un indirizzo web'),T('monogram_label','Scritta sotto il "!" centrale')]),
