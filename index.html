@@ -110,7 +110,8 @@ body.ondark-logo .wm img{filter:none}
 .mq-line.s1{font-family:var(--serif);font-weight:600;font-style:italic;color:var(--red2);font-size:clamp(70px,9vw,140px);letter-spacing:-1px}
 .mq-line.s2{font-variation-settings:"wdth" var(--wdth,93);font-weight:750;color:var(--fog);font-size:clamp(66px,8.5vw,130px);letter-spacing:-3.7px;text-transform:uppercase}
 #sign{position:absolute;left:50%;top:50%;width:min(62vw,860px);transform:translate(-50%,-50%);z-index:6;pointer-events:none;overflow:visible}
-#sign path{fill:none;stroke:var(--red);stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
+#sign .sfill{fill:var(--red);stroke:var(--red);stroke-width:2.2;stroke-linejoin:round}
+#sign path.sp{fill:none;stroke:var(--red);stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
 /* ---------- manifesto ---------- */
 .manifesto{padding:22vh 4vw 20vh;text-align:center}
 .manifesto .eyebrow{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:5vh}
@@ -296,7 +297,7 @@ const R={
     <div>${esc(d.ticket_text)}</div><hr><div class="badge"><b>!</b>${esc(d.ticket_badge)}</div></div>
    <div class="hcenter${d.slogan?'':' noslogan'}">${d.slogan?`<div class="slogan">${md(d.slogan)}</div>`:''}<div class="hint cap"><span>${esc(d.hint)}</span><i></i></div></div></div>
   <div class="msg-label cap" id="msgLbl">${esc(d.message_label)}</div>
-  <svg id="sign" viewBox="${(d.signature_viewbox||'0 0 1050 280')}">${(Array.isArray(d.signature_paths)&&d.signature_paths.length?d.signature_paths:String(d.signature_paths||'').split(/\n+/)).filter(Boolean).map(p=>`<path class="sp" d="${esc(p)}"/>`).join('')}</svg>
+  ${signSVG(d)}
  </section>`,
  manifesto:d=>`<section class="manifesto topoD" id="manifesto"><div class="eyebrow cap"><svg viewBox="0 0 60 60" fill="none" stroke="var(--fog)" stroke-width="1.4"><circle cx="30" cy="30" r="26"/><path d="M26 16h8v20h-8zM26 40h8v6h-8z" fill="var(--red)" stroke="none"/></svg>${esc(d.eyebrow)}</div>
   <h2 class="stmt" id="stmt">${(d.lines||[]).map(l=>`<span class="l">${md(l)}</span>`).join('')}</h2></section>`,
@@ -400,6 +401,13 @@ function topoAnim(){
 function autoplayVideos(){const vs=[...document.querySelectorAll('video')];vs.forEach(v=>{v.muted=true;v.defaultMuted=true;v.playsInline=true;v.setAttribute('muted','');v.setAttribute('playsinline','');v.setAttribute('webkit-playsinline','');v.removeAttribute('controls');const p=v.play();p&&p.catch(()=>{})});
  const kick=()=>vs.forEach(v=>{if(v.paused){const p=v.play();p&&p.catch(()=>{})}});['touchstart','click','scroll'].forEach(ev=>addEventListener(ev,kick,{once:true,passive:true}));
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)kick()})}
+
+function signSVG(d){
+ const vb=(d.signature_viewbox||'0 0 1050 280').trim();
+ if(d.signature_fill){const v=vb.split(/\s+/).map(Number);
+  return `<svg id="sign" viewBox="${vb}"><defs><linearGradient id="sgG" x1="0" x2="1"><stop offset="0" stop-color="#fff"/><stop offset=".85" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><mask id="sgM" maskUnits="userSpaceOnUse" x="${v[0]-200}" y="${v[1]}" width="${v[2]+400}" height="${v[3]}"><rect id="sgR" x="${v[0]-120}" y="${v[1]-50}" width="0" height="${v[3]+100}" fill="url(#sgG)" transform="skewX(-14)"/></mask></defs><path class="sfill" d="${esc(d.signature_fill)}" mask="url(#sgM)"/>${d.signature_swoosh?`<path class="sp" d="${esc(d.signature_swoosh)}"/>`:''}</svg>`}
+ const ps=(Array.isArray(d.signature_paths)?d.signature_paths:String(d.signature_paths||'').split(/\n+/)).filter(Boolean);
+ return `<svg id="sign" viewBox="${vb}">${ps.map(p=>`<path class="sp" d="${esc(p)}"/>`).join('')}</svg>`}
 function init(){autoplayVideos();
 topoAnim();
 gsap.registerPlugin(ScrollTrigger);
@@ -533,7 +541,9 @@ if($('#hero')){
   // prima se ne vanno firma e card (la card si richiude al centro), poi resta il testo da leggere
   .to('#sign,#msgLbl',{opacity:0,duration:.35},3.25).to('#heroCard',{scale:.55,opacity:0,duration:.75,ease:'power3.in',transformOrigin:'50% 50%'},3.3)
   .fromTo('#hero',{backgroundColor:'rgba(22,22,22,0)'},{backgroundColor:FX.hero_scroll_bg||'#3d0709',duration:2.2,ease:'power1.in'},.6).to('#hero',{backgroundColor:'rgba(22,22,22,0)',duration:.6},4.7).to('#mqw',{opacity:0,duration:.35},5.0);
- {let at=1.5;sps.forEach((p,k)=>{const du=1.45*lens[k]/TL;ht.to(p,{strokeDashoffset:0,duration:du,ease:'none'},at);at+=du})}
+ {let at=1.5;const R=$('#sgR');
+  if(R){const v=$('#sign').viewBox.baseVal;R.setAttribute('width',FX.signature_draw===false?v.width+400:0);ht.to(R,{attr:{width:v.width+400},duration:1.15,ease:'power1.inOut'},at);at+=1.15}
+  const tot=R?.3:1.45;sps.forEach((p,k)=>{const du=tot*lens[k]/TL;ht.to(p,{strokeDashoffset:0,duration:du,ease:'power2.out'},at);at+=du})}
 }
 
 /* MAGNETE: fermando lo scroll vicino all'inizio di una sezione, la pagina si allinea da sola (così chi scorre veloce non salta i contenuti) */
