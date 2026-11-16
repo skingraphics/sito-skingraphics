@@ -435,7 +435,7 @@ const heroLight=!!$('#hero')&&!$('#hero.dark');theme(heroLight);
 const isLight=el=>{if(el.classList.contains('cream'))return true;const c=getComputedStyle(el).backgroundColor.match(/[\d.]+/g);if(!c||(c[3]!==undefined&&+c[3]<.5))return false;return (.3*c[0]+.59*c[1]+.11*c[2])>150};
 let menuOpen=false,lastLight=null;
 function syncTheme(){if(menuOpen)return;const y=60;let light=false;
- for(const sec of document.querySelectorAll('#main>section,footer')){const r=sec.getBoundingClientRect();if(r.top<=y&&r.bottom>y){
+ for(const sec of document.querySelectorAll('#main>section,#main>.pin-spacer>section,footer')){const r=sec.getBoundingClientRect();if(r.top<=y&&r.bottom>y){
   if(sec.id==='hero')light=heroLight&&r.top>-innerHeight*.3;else if(sec.tagName==='FOOTER'){const fp=sec.querySelector('.fpanel');light=!(fp&&fp.getBoundingClientRect().top<=y)}else light=isLight(sec)||!!sec.querySelector('[data-light="1"]')||sec.dataset.light==='1';break}}
  if(light!==lastLight){lastLight=light;theme(light)}}
 addEventListener('scroll',()=>requestAnimationFrame(syncTheme),{passive:true});gsap.ticker.add(()=>{if(lenis)syncTheme()});
