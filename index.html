@@ -248,6 +248,11 @@ body.ondark-logo .wm img{filter:none}
  .tour .steps li:after{left:auto;right:0}
 }
 @media (min-width:901px){.mstep,.mphones{display:none}}
+.mph{position:absolute;left:-9%;bottom:-16%;width:21%;aspect-ratio:9/19;border-radius:26px;background:#0a0a0a;padding:7px;box-shadow:0 40px 90px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.16),inset 0 0 0 2px #222;transform:translateZ(90px) rotate(-6deg);z-index:3;will-change:transform}
+.mph .notch{position:absolute;top:13px;left:50%;width:28%;height:10px;border-radius:10px;background:#000;transform:translateX(-50%);z-index:2}
+.mph .mscr{width:100%;height:100%;border-radius:20px;overflow:hidden;background:#111}
+.mph .strip img{display:block;width:100%;height:auto}
+@media (max-width:900px){.mph{display:none}}
 /* ---------- partner ---------- */
 .partners{padding:18vh 0 16vh;position:relative;overflow:hidden;text-align:center}
 .partners .t{position:relative;z-index:2;font-variation-settings:"wdth" var(--wdth,93);font-weight:750;font-size:clamp(46px,5vw,78px);letter-spacing:-2px;text-transform:uppercase;line-height:.9}
@@ -392,7 +397,8 @@ const R={
    ${d.cta_label?`<div><a class="abtn" href="${esc(d.cta_link)}"${/^https?:/.test(d.cta_link||'')?' target="_blank" rel="noopener"':''}>${esc(d.cta_label)}</a></div>`:''}</div>
    <div class="stage" id="stage"><div class="bw" id="bw"><div class="bar"><i></i><i></i><i></i><div class="url">${esc(d.url||'skincms.it')}</div></div>
     <div class="scr">${st.filter(x=>x.img).map(x=>`<img src="${src(x.img)}" alt="${esc(x.title)}">`).join('')}
-    <div class="phones">${ph.slice(0,3).map(x=>`<img src="${src(x)}" alt="">`).join('')}</div></div></div>
+    <div class="phones">${ph.slice(0,3).map(x=>`<img src="${src(x)}" alt="">`).join('')}</div></div>
+    ${(d.mobile_screens||ph).length?`<div class="mph" id="mph"><div class="notch"></div><div class="mscr"><div class="strip" id="strip">${(d.mobile_screens&&d.mobile_screens.length?d.mobile_screens:ph).map(x=>`<img src="${src(x)}" alt="">`).join('')}</div></div></div>`:''}</div>
     ${st.map((x,i)=>`<div class="mstep"><h4><b>0${i+1}</b>${esc(x.title)}</h4><p>${md(x.text)}</p>${x.img&&i?`<img src="${src(x.img)}" alt="" loading="lazy">`:''}</div>`).join('')}
     <div class="mphones">${ph.slice(0,3).map(x=>`<img src="${src(x)}" alt="" loading="lazy">`).join('')}</div>
     <div class="counter"><b id="tcur">01</b> / 0${st.length}</div></div></section>`},
@@ -668,13 +674,16 @@ if($('#stage')&&$('.tour'))(function(){const sec=$('.tour'),shots=[...document.q
  if(mobile||n<2)return;
  const st=$('#stage');st.addEventListener('mousemove',e=>{const r=st.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;st.style.setProperty('--gx',x*100+'%');st.style.setProperty('--gy',y*100+'%');gsap.to('#bw',{rotateY:-8+(x-.5)*10,rotateX:4-(y-.5)*8,duration:.8,ease:'power2.out',overwrite:'auto'})});
  const setStep=i=>{lis.forEach((l,j)=>l.classList.toggle('on',j===i));if(cur)cur.textContent='0'+(i+1)};
- const tl=gsap.timeline({defaults:{ease:'none'},scrollTrigger:{trigger:sec,start:'top top',end:()=>'+='+innerHeight*(n-.2)*1.1,pin:true,scrub:1,snap:{snapTo:'labels',duration:{min:.25,max:.7},delay:.08,ease:'power2.inOut'},
+ const tl=gsap.timeline({defaults:{ease:'none'},scrollTrigger:{trigger:sec,start:'top top',end:()=>'+='+innerHeight*(n-.2)*1.1,pin:true,scrub:1,invalidateOnRefresh:true,snap:{snapTo:'labels',duration:{min:.25,max:.7},delay:.08,ease:'power2.inOut'},
   onUpdate:self=>{const t=self.progress*(n-1);const i=Math.min(n-1,Math.round(t));setStep(i);lis.forEach((l,j)=>l.style.setProperty('--p',Math.max(0,Math.min(1,t-j+1))*100+'%'))}}});
  tl.addLabel('s0',0);
  for(let i=1;i<n;i++){const a=shots[i-1],b=shots[i];
   if(b){tl.fromTo(b,{clipPath:'inset(100% 0 0 0)',scale:1.06},{clipPath:'inset(0% 0 0 0)',scale:1,duration:1,ease:'power2.inOut'},i-1);if(a)tl.to(a,{scale:.94,filter:'brightness(.45)',duration:1,ease:'power2.inOut'},i-1)}
   else{const last=shots[shots.length-1];if(last)tl.to(last,{filter:'brightness(.3) blur(2px)',duration:1},i-1);tl.to(phones,{opacity:1,y:0,duration:1,stagger:.15,ease:'power3.out'},i-1)}
   tl.addLabel('s'+i,i)}
+ addEventListener('load',()=>ScrollTrigger.refresh());const mph=$('#mph'),strip=$('#strip');if(mph){const pos=[{xPercent:0,yPercent:0,rotation:-6},{xPercent:440,yPercent:-30,rotation:6},{xPercent:-20,yPercent:-55,rotation:-3}];
+  for(let i=1;i<n;i++){if(i<n-1||shots[i])tl.to(mph,{...(pos[i]||pos[i%3]),duration:1,ease:'power2.inOut'},i-1);else tl.to(mph,{opacity:0,yPercent:40,duration:.6,ease:'power2.in'},i-1)}
+  if(strip)tl.fromTo(strip,{y:0},{y:()=>-Math.max(0,strip.scrollHeight-strip.parentNode.clientHeight),duration:Math.max(1,n-1.4),ease:'none',immediateRender:false},0)}
  lis.forEach((l,i)=>l.onclick=()=>{const s=tl.scrollTrigger,y=s.start+(s.end-s.start)*(i/(n-1));lenis?lenis.scrollTo(y):scrollTo({top:y,behavior:'smooth'})});
 })();
 if($('#collage')){[['.c1',-6],['.c2',8],['.c3',-10],['.c4',16],['.c5',22],['.c6',-14]].forEach(([s,v])=>{if($('.collage '+s))gsap.fromTo('.collage '+s,{yPercent:v},{yPercent:-v,ease:'none',scrollTrigger:{trigger:'#collage',start:'top bottom',end:'bottom top',scrub:true}})});
