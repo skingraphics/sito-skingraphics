@@ -403,6 +403,7 @@ function autoplayVideos(){const vs=[...document.querySelectorAll('video')];vs.fo
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)kick()})}
 
 function signSVG(d){
+ if(!d.signature_fill&&!d.signature_paths){const sh=((window.SITO_SEED||[]).find(r=>r.key==='hero')||{}).data||{};d={...d,signature_fill:sh.signature_fill,signature_viewbox:d.signature_viewbox||sh.signature_viewbox,signature_swoosh:d.signature_swoosh||sh.signature_swoosh}}
  const vb=(d.signature_viewbox||'0 0 1050 280').trim();
  if(d.signature_fill){const v=vb.split(/\s+/).map(Number);
   return `<svg id="sign" viewBox="${vb}"><defs><linearGradient id="sgG" x1="0" x2="1"><stop offset="0" stop-color="#fff"/><stop offset=".85" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><mask id="sgM" maskUnits="userSpaceOnUse" x="${v[0]-200}" y="${v[1]}" width="${v[2]+400}" height="${v[3]}"><rect id="sgR" x="${v[0]-120}" y="${v[1]-50}" width="0" height="${v[3]+100}" fill="url(#sgG)" transform="skewX(-14)"/></mask></defs><path class="sfill" d="${esc(d.signature_fill)}" mask="url(#sgM)"/>${d.signature_swoosh?`<path class="sp" d="${esc(d.signature_swoosh)}"/>`:''}</svg>`}
