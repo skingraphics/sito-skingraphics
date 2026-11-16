@@ -13,7 +13,7 @@
  --ink:#161616;      /* = Paddock Olive: canvas scuro */
  --cream:#f4f2ee;    /* = Chalk Cream: canvas chiaro */
  --red:#e31e24;      /* = Signal Lime: solo pulsanti, firma, glow footer (rosso logo skin) */
- --red2:#d63b3f;     /* = Moss Lime: parole serif sul nero */
+ --red2:#e31e24;     /* = Moss Lime: parole serif sul nero */
  --void:#0b0b0b;     /* = Visor Black */
  --fog:#e6e2db;      /* = Sage Fog */
  --tarmac:#4e4c49;--lichen:#b6b1a9;--stone:#b9b5ae;
@@ -531,22 +531,22 @@ if($('#heroBg')){
 /* HERO scroll */
 if($('#hero')){
  const sps=[...document.querySelectorAll('#sign .sp, #sign .mk')];const lens=sps.map(p=>p.getTotalLength?p.getTotalLength():300);const TL=lens.reduce((a,b)=>a+b,0)||1;sps.forEach((p,k)=>{p.style.strokeDasharray=lens[k]+' '+(lens[k]+60);p.style.strokeDashoffset=FX.signature_draw===false?0:lens[k]+14});if(FX.signature_draw===false)$('#sign').style.display='none';
- const ht=gsap.timeline({scrollTrigger:{trigger:'#hero',start:'top top',end:'+='+(Math.max(+FX.hero_scroll_length||0,4000)),pin:true,scrub:1,snap:FX.scroll_snap===false?false:{snapTo:'labelsDirectional',duration:{min:.5,max:1.2},delay:.12,ease:'power2.inOut'},
-  onUpdate:s=>{H.active=s.progress<.72;$('#monoLbl').style.opacity=s.progress>.25&&s.progress<.62?1:0}}});
- ht.addLabel('inizio',0).addLabel('card',1.3).addLabel('firma',3.0).addLabel('testo',4.4);
+ const ht=gsap.timeline({scrollTrigger:{trigger:'#hero',start:'top top',end:'+='+(Math.max(+FX.hero_scroll_length||0,4600)),pin:true,scrub:1.2,snap:FX.scroll_snap===false?false:{snapTo:'labelsDirectional',duration:{min:.5,max:1.2},delay:.12,ease:'power2.inOut'},
+  onUpdate:s=>{H.active=s.progress<.74;$('#monoLbl').style.opacity=s.progress>.25&&s.progress<.66?1:0}}});
+ ht.addLabel('inizio',0).addLabel('card',1.3).addLabel('firma',3.5).addLabel('testo',4.9);
  ht.to('#heroCard',{clipPath:mobile?'inset(24% 10% 24% 10%)':'inset(24% 32% 24% 32%)',duration:1.2,ease:LE},0)
   .to('.ticket,.hint,.corner,.slogan',{opacity:0,duration:.3},0).to('#mqw',{opacity:1,duration:.4},.5)
-  .fromTo('#mq1',{xPercent:5},{xPercent:-60,duration:4.8,ease:'none'},.4).fromTo('#mq2',{xPercent:-60},{xPercent:5,duration:4.8,ease:'none'},.4)
+  .fromTo('#mq1',{xPercent:5},{xPercent:-62,duration:5.3,ease:'none'},.4).fromTo('#mq2',{xPercent:-62},{xPercent:5,duration:5.3,ease:'none'},.4)
   .to('#heroPhoto',{opacity:(window.__HERO&&window.__HERO.subject==='personaggio'&&window.__HERO.character_img&&!window.__HERO.photo_in_card)?0:1,duration:.5},1.1)
   
   .add(()=>{},1.5)
   .to('#tint',{opacity:FX.signature_tint===false?0:(FX.signature_tint_strength==null?.85:+FX.signature_tint_strength),duration:1.2,ease:'power1.inOut'},1.4).to('#tint2',{opacity:FX.signature_tint===false?0:1,duration:1.2},1.4)
   // prima se ne vanno firma e card (la card si richiude al centro), poi resta il testo da leggere
-  .to('#sign,#msgLbl',{opacity:0,duration:.35},3.25).to('#heroCard',{scale:.55,opacity:0,duration:.75,ease:'power3.in',transformOrigin:'50% 50%'},3.3)
-  .fromTo('#hero',{backgroundColor:'rgba(22,22,22,0)'},{backgroundColor:FX.hero_scroll_bg||'#3d0709',duration:2.2,ease:'power1.in'},.6).to('#hero',{backgroundColor:'rgba(22,22,22,0)',duration:.6},4.7).to('#mqw',{opacity:0,duration:.35},5.0);
+  .to('#sign,#msgLbl',{opacity:0,duration:.35},3.75).to('#heroCard',{scale:.55,opacity:0,duration:.75,ease:'power3.in',transformOrigin:'50% 50%'},3.8)
+  .fromTo('#hero',{backgroundColor:'rgba(22,22,22,0)'},{backgroundColor:FX.hero_scroll_bg||'#3d0709',duration:2.2,ease:'power1.in'},.6).to('#hero',{backgroundColor:'rgba(22,22,22,0)',duration:.6},5.2).to('#mqw',{opacity:0,duration:.35},5.5);
  {let at=1.5;const R=$('#sgR');
   if(R){const v=$('#sign').viewBox.baseVal;R.setAttribute('width',FX.signature_draw===false?v.width+400:0);ht.to(R,{attr:{width:v.width+400},duration:1.15,ease:'power1.inOut'},at);at+=1.15}
-  const tot=R?.3:1.45;sps.forEach((p,k)=>{const du=tot*lens[k]/TL;ht.to(p,{strokeDashoffset:0,duration:du,ease:'power2.out'},at);at+=du})}
+  const tot=R?.3:2.0;sps.forEach((p,k)=>{const du=tot*lens[k]/TL;ht.to(p,{strokeDashoffset:0,duration:du,ease:'power2.out'},at);at+=du})}
 }
 
 /* MAGNETE: fermando lo scroll vicino all'inizio di una sezione, la pagina si allinea da sola (così chi scorre veloce non salta i contenuti) */
