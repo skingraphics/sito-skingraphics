@@ -197,6 +197,48 @@ body.ondark-logo .wm img{filter:none}
 @media (max-width:900px){.collage{min-height:0;height:115vw}.collage .c4,.collage .c5{width:26%;border-radius:14px}.collage .c6{width:30%}}
 .wheel{position:absolute;right:10%;bottom:8%;width:28%;aspect-ratio:1;border-radius:50%;border:3px solid var(--cream);background:conic-gradient(var(--red) 0 45deg,#111 45deg 90deg,var(--red) 90deg 135deg,#111 135deg 180deg,var(--red) 180deg 225deg,#111 225deg 270deg,var(--red) 270deg 315deg,#111 315deg 360deg)}
 @media (max-width:900px){.product{grid-template-columns:1fr}.collage{height:80vh}}
+
+/* ---------- SKIN CMS: tour a scorrimento ---------- */
+.product.tour{min-height:100vh;height:100vh;overflow:hidden}
+.tour .txt{padding:12vh 3vw 8vh 4vw}
+.tour .t1,.tour .t2{font-size:clamp(44px,4.8vw,84px)}
+.tour .t1{letter-spacing:-2.6px}
+.tour p{font-size:15.5px;margin:18px 0 22px;max-width:430px}
+.steps{list-style:none;margin:0 0 26px;padding:0;max-width:440px;counter-reset:st}
+.steps li{position:relative;padding:12px 0 12px 46px;border-top:1px solid rgba(22,22,22,.14);cursor:pointer;counter-increment:st}
+.steps li:last-child{border-bottom:1px solid rgba(22,22,22,.14)}
+.steps li:before{content:"0" counter(st);position:absolute;left:0;top:13px;font-size:12.5px;font-weight:700;letter-spacing:1px;color:rgba(22,22,22,.35);transition:color .4s}
+.steps li:after{content:"";position:absolute;left:0;top:-1px;height:2px;width:var(--p,0%);background:var(--red)}
+.steps h4{margin:0;font-size:19px;font-weight:750;text-transform:uppercase;letter-spacing:-.3px;color:rgba(22,22,22,.38);transition:color .4s}
+.steps .d{display:grid;grid-template-rows:0fr;transition:grid-template-rows .5s cubic-bezier(.2,.7,.2,1),opacity .4s;opacity:0}
+.steps .d>span{overflow:hidden;font-size:14.5px;line-height:1.45;padding-top:0}
+.steps li.on h4{color:var(--ink)}.steps li.on:before{color:var(--red)}
+.steps li.on .d{grid-template-rows:1fr;opacity:1}.steps li.on .d>span{padding-top:6px}
+.stage{position:relative;overflow:hidden;background:radial-gradient(ellipse at 55% 45%,#3a080b 0%,#140405 45%,var(--void) 80%);display:flex;align-items:center;justify-content:center}
+.stage:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at var(--gx,60%) var(--gy,40%),rgba(227,30,36,.28),transparent 45%);transition:background .2s}
+.bw{position:relative;width:min(88%,1000px);border-radius:14px;background:#0f0f11;box-shadow:0 50px 120px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.1);transform:perspective(1600px) rotateY(-8deg) rotateX(4deg);transform-style:preserve-3d;will-change:transform}
+.bw .bar{height:34px;display:flex;align-items:center;gap:7px;padding:0 14px;border-bottom:1px solid rgba(255,255,255,.07)}
+.bw .bar i{width:10px;height:10px;border-radius:50%;background:#3a3a3e}.bw .bar i:first-child{background:var(--red)}
+.bw .url{margin-left:14px;flex:1;max-width:340px;height:20px;border-radius:6px;background:rgba(255,255,255,.06);font-size:11px;color:rgba(255,255,255,.5);display:flex;align-items:center;padding:0 10px;letter-spacing:.3px}
+.bw .scr{position:relative;aspect-ratio:2.09/1;overflow:hidden;border-radius:0 0 14px 14px;background:#0b0b0d}
+.bw .scr img{position:absolute;left:0;top:0;width:100%;height:auto;clip-path:inset(100% 0 0 0);will-change:clip-path,transform}
+.bw .scr img:first-child{clip-path:inset(0 0 0 0)}
+.phones{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:2.2%;pointer-events:none;transform:translateZ(60px)}
+.phones img{width:19%;border-radius:18px;box-shadow:0 30px 70px rgba(0,0,0,.75),0 0 0 5px #111,0 0 0 6px rgba(255,255,255,.18);opacity:0;transform:translateY(60%)}
+.tour .counter{position:absolute;right:4%;bottom:5%;color:rgba(255,255,255,.55);font-size:12.5px;letter-spacing:2px;font-weight:600}
+.tour .counter b{color:#fff}
+@media (max-width:900px){
+ .product.tour{height:auto;min-height:0;grid-template-columns:1fr}
+ .tour .txt{padding:12vh 6vw 4vh}.steps{display:none}
+ .stage{display:block;padding:6vh 0 8vh}
+ .bw{width:92%;margin:0 auto 34px;transform:none}
+ .bw .scr img{clip-path:none!important;position:relative;display:none}.bw .scr img:first-child{display:block}.bw .scr{aspect-ratio:auto}
+ .mstep{padding:0 6vw 30px;color:#fff}.mstep h4{font-size:18px;text-transform:uppercase;margin:0 0 6px}.mstep h4 b{color:var(--red);margin-right:8px}.mstep p{margin:0 0 14px;font-size:14.5px;opacity:.8}
+ .mstep img{width:100%;border-radius:10px;box-shadow:0 20px 50px rgba(0,0,0,.6)}
+ .mphones{display:flex;gap:10px;padding:0 6vw}.mphones img{flex:1;min-width:0;border-radius:12px;box-shadow:0 0 0 3px #111,0 0 0 4px rgba(255,255,255,.15)}
+ .phones,.tour .counter{display:none}
+}
+@media (min-width:901px){.mstep,.mphones{display:none}}
 /* ---------- partner ---------- */
 .partners{padding:18vh 0 16vh;position:relative;overflow:hidden;text-align:center}
 .partners .t{position:relative;z-index:2;font-variation-settings:"wdth" var(--wdth,93);font-weight:750;font-size:clamp(46px,5vw,78px);letter-spacing:-2px;text-transform:uppercase;line-height:.9}
@@ -334,6 +376,17 @@ const R={
    <div class="t1">${esc(d.title1)}</div><div class="t2">${esc(d.title2)}</div><p>${md(d.text)}</p>
    ${d.cta_label?`<div><a class="abtn" href="${esc(d.cta_link)}">${esc(d.cta_label)}</a></div>`:''}</div>
    <div class="collage" id="collage">${im.slice(0,6).map((x,i)=>`<img class="c${i+1}" src="${src(x)}" alt="" loading="lazy">`).join('')}${d.show_wheel?'<div class="wheel" id="wheel"></div>':''}</div></section>`},
+ product_tour:d=>{const st=d.steps||[],ph=d.phones||[];return `<section class="product tour cream topoL" id="skincms"><div class="txt">
+   <div class="eb"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>${esc(d.eyebrow)}</div>
+   <div class="t1">${esc(d.title1)}</div><div class="t2">${esc(d.title2)}</div><p>${md(d.text)}</p>
+   <ol class="steps">${st.map((x,i)=>`<li data-i="${i}" class="${i?'':'on'}"><h4>${esc(x.title)}</h4><div class="d"><span>${md(x.text)}</span></div></li>`).join('')}</ol>
+   ${d.cta_label?`<div><a class="abtn" href="${esc(d.cta_link)}">${esc(d.cta_label)}</a></div>`:''}</div>
+   <div class="stage" id="stage"><div class="bw" id="bw"><div class="bar"><i></i><i></i><i></i><div class="url">${esc(d.url||'skincms.it')}</div></div>
+    <div class="scr">${st.filter(x=>x.img).map(x=>`<img src="${src(x.img)}" alt="${esc(x.title)}">`).join('')}
+    <div class="phones">${ph.slice(0,3).map(x=>`<img src="${src(x)}" alt="">`).join('')}</div></div></div>
+    ${st.map((x,i)=>`<div class="mstep"><h4><b>0${i+1}</b>${esc(x.title)}</h4><p>${md(x.text)}</p>${x.img&&i?`<img src="${src(x.img)}" alt="" loading="lazy">`:''}</div>`).join('')}
+    <div class="mphones">${ph.slice(0,3).map(x=>`<img src="${src(x)}" alt="" loading="lazy">`).join('')}</div>
+    <div class="counter"><b id="tcur">01</b> / 0${st.length}</div></div></section>`},
  partners:d=>`<section class="partners cream topoL"><div class="brush" id="brush">${esc(d.brush)}</div><div class="t">${md(d.title)}</div>
    <div class="logos cap${(d.logos||[]).some(l=>l.img)?' has-img':''}">${(d.logos||[]).map(l=>{const r=+l.ratio||3,w=Math.min(190,Math.round(Math.sqrt(5200*r)));return `<span>${l.img?`<img src="${src(l.img)}" alt="${esc(l.name)}" loading="lazy" style="--w:${w}px">`:esc(l.name)}</span>`}).join('')}</div></section>`,
  social:d=>`<section class="social cream topoL"><div class="t">${md(d.title)}</div><div class="deck" id="deck">${(d.cards||[]).map(c=>`<div class="dc"><img src="${src(c.img)}" alt=""><div class="who">${esc(c.caption)}</div></div>`).join('')}</div></section>`
@@ -364,7 +417,7 @@ let S={},FX={};
   const rows=await loadContent();const by={};rows.forEach(r=>by[r.key]=r);
   S=(by.settings||{}).data||{};window.__HERO=(by.hero||{}).data||{};FX=S.effects||{};applySettings(S);
   const secs=rows.filter(r=>r.key!=='settings'&&r.key!=='footer'&&r.enabled!==false&&R[r.key]).sort((a,b)=>a.position-b.position);
-  document.getElementById('main').innerHTML=secs.map(r=>R[r.key](r.data||{})).join('');
+  document.getElementById('main').innerHTML=secs.map(r=>(r.key==='product'&&(r.data||{}).layout==='tour'?R.product_tour:R[r.key])(r.data||{})).join('');
   renderFooter((by.footer||{}).data||{});
   document.getElementById('menuLinks').innerHTML=secs.filter(r=>MENU[r.key]).map(r=>`<a class="big up sans" href="${ANCH[r.key]}"><span>${MENU[r.key]}</span></a>`).join('')+'<a class="big up sans" href="#footer"><span>Contatti</span></a>';
   const fd=(by.footer||{}).data||{};document.getElementById('menuSide').innerHTML=`${esc(fd.legal||'')}<br>${esc(fd.phone||'')} · ${esc(fd.email||'')}`;
@@ -600,6 +653,21 @@ if($('#fbImg')){gsap.fromTo('#fbImg',{yPercent:-8,scale:1.15},{yPercent:8,scale:
 if($('.hgrid')){gsap.utils.toArray('.hgrid .col').forEach((c,i)=>gsap.fromTo(c,{y:120+i*40},{y:-40-i*30,ease:'none',scrollTrigger:{trigger:'.hgrid',start:'top bottom',end:'bottom top',scrub:true}}));
  gsap.from('.hc',{opacity:0,clipPath:'polygon(0 0,100% 0,100% 0,100% 0,0 0)',stagger:.08,duration:.9,ease:LE,scrollTrigger:{trigger:'.hgrid',start:'top 80%'}})}
 /* PRODOTTO */
+if($('#stage')&&$('.tour'))(function(){const sec=$('.tour'),shots=[...document.querySelectorAll('.bw .scr>img')],lis=[...document.querySelectorAll('.steps li')],phones=[...document.querySelectorAll('.phones img')],n=lis.length,cur=$('#tcur');
+ gsap.from('.tour .txt>*',{y:50,opacity:0,stagger:.08,duration:.7,ease:LE,scrollTrigger:{trigger:sec,start:'top 65%'}});
+ gsap.from('#bw',{y:120,opacity:0,rotateY:-22,duration:1.2,ease:'power3.out',scrollTrigger:{trigger:sec,start:'top 70%'}});
+ if(mobile||n<2)return;
+ const st=$('#stage');st.addEventListener('mousemove',e=>{const r=st.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;st.style.setProperty('--gx',x*100+'%');st.style.setProperty('--gy',y*100+'%');gsap.to('#bw',{rotateY:-8+(x-.5)*10,rotateX:4-(y-.5)*8,duration:.8,ease:'power2.out',overwrite:'auto'})});
+ const setStep=i=>{lis.forEach((l,j)=>l.classList.toggle('on',j===i));if(cur)cur.textContent='0'+(i+1)};
+ const tl=gsap.timeline({defaults:{ease:'none'},scrollTrigger:{trigger:sec,start:'top top',end:()=>'+='+innerHeight*(n-.2)*1.1,pin:true,scrub:1,snap:{snapTo:'labels',duration:{min:.25,max:.7},delay:.08,ease:'power2.inOut'},
+  onUpdate:self=>{const t=self.progress*(n-1);const i=Math.min(n-1,Math.round(t));setStep(i);lis.forEach((l,j)=>l.style.setProperty('--p',Math.max(0,Math.min(1,t-j+1))*100+'%'))}}});
+ tl.addLabel('s0',0);
+ for(let i=1;i<n;i++){const a=shots[i-1],b=shots[i];
+  if(b){tl.fromTo(b,{clipPath:'inset(100% 0 0 0)',scale:1.06},{clipPath:'inset(0% 0 0 0)',scale:1,duration:1,ease:'power2.inOut'},i-1);if(a)tl.to(a,{scale:.94,filter:'brightness(.45)',duration:1,ease:'power2.inOut'},i-1)}
+  else{const last=shots[shots.length-1];if(last)tl.to(last,{filter:'brightness(.3) blur(2px)',duration:1},i-1);tl.to(phones,{opacity:1,y:0,duration:1,stagger:.15,ease:'power3.out'},i-1)}
+  tl.addLabel('s'+i,i)}
+ lis.forEach((l,i)=>l.onclick=()=>{const s=tl.scrollTrigger,y=s.start+(s.end-s.start)*(i/(n-1));lenis?lenis.scrollTo(y):scrollTo({top:y,behavior:'smooth'})});
+})();
 if($('#collage')){[['.c1',-6],['.c2',8],['.c3',-10],['.c4',16],['.c5',22],['.c6',-14]].forEach(([s,v])=>{if($('.collage '+s))gsap.fromTo('.collage '+s,{yPercent:v},{yPercent:-v,ease:'none',scrollTrigger:{trigger:'#collage',start:'top bottom',end:'bottom top',scrub:true}})});
  if($('#wheel')&&FX.wheel_spin!==false)gsap.to('#wheel',{rotate:1440+60,duration:4,ease:'power4.out',scrollTrigger:{trigger:'#collage',start:'top 50%'}});
  gsap.from('.product .txt>*',{y:60,opacity:0,stagger:.1,duration:.75,ease:LE,scrollTrigger:{trigger:'.product',start:'top 60%'}})}
