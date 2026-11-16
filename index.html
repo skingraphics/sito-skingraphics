@@ -397,7 +397,7 @@ const R={
     <div class="mphones">${ph.slice(0,3).map(x=>`<img src="${src(x)}" alt="" loading="lazy">`).join('')}</div>
     <div class="counter"><b id="tcur">01</b> / 0${st.length}</div></div></section>`},
  partners:d=>`<section class="partners cream topoL"><div class="brush" id="brush">${esc(d.brush)}</div><div class="t">${md(d.title)}</div>
-   <div class="logos cap${(d.logos||[]).some(l=>l.img)?' has-img':''}">${(d.logos||[]).map(l=>{const r=+l.ratio||3,w=Math.min(190,Math.round(Math.sqrt(5200*r)));return `<span>${l.img?`<img src="${src(l.img)}${l.img.includes('?')?'':'?v=2'}" alt="${esc(l.name)}" loading="lazy" style="--w:${w}px">`:esc(l.name)}</span>`}).join('')}</div></section>`,
+   <div class="logos cap${(d.logos||[]).some(l=>l.img)?' has-img':''}">${(d.logos||[]).map(l=>{const r=+l.ratio||3,w=Math.min(190,Math.round(Math.sqrt(5200*r)));return `<span>${l.img?`<img src="${src(l.img)}" alt="${esc(l.name)}" loading="lazy" style="--w:${w}px">`:esc(l.name)}</span>`}).join('')}</div></section>`,
  social:d=>`<section class="social cream topoL"><div class="t">${md(d.title)}</div><div class="deck" id="deck">${(d.cards||[]).map(c=>`<div class="dc"><img src="${src(c.img)}" alt=""><div class="who">${esc(c.caption)}</div></div>`).join('')}</div></section>`
 };
 const MENU={hero:'Home',manifesto:'Chi siamo',story:'Team',gioco:'Servizi',hof:'Lavori',product:'SKIN CMS',social:'Social'};
