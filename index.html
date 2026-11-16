@@ -399,7 +399,7 @@ const R={
    <div class="stage" id="stage"><div class="bw" id="bw"><div class="bar"><i></i><i></i><i></i><div class="url">${esc(d.url||'skincms.it')}</div></div>
     <div class="scr">${st.filter(x=>x.img).map(x=>`<img src="${src(x.img)}" alt="${esc(x.title)}">`).join('')}
     <div class="phones">${ph.slice(0,3).map(x=>`<img src="${src(x)}" alt="">`).join('')}</div></div>
-    ${(d.mobile_screens||ph).length?`<div class="mph" id="mph"><div class="notch"></div><div class="mscr"><div class="strip" id="strip">${(d.mobile_screens&&d.mobile_screens.length?d.mobile_screens:ph).map(x=>`<img src="${src(x)}" alt="">`).join('')}</div></div></div>`:''}</div>
+    ${(d.mobile_screens&&d.mobile_screens.length?d.mobile_screens:ph).length?`<div class="mph" id="mph"><div class="notch"></div><div class="mscr"><div class="strip" id="strip">${(d.mobile_screens&&d.mobile_screens.length?d.mobile_screens:ph).map(x=>`<img src="${src(x)}" alt="">`).join('')}</div></div></div>`:''}</div>
     ${st.map((x,i)=>`<div class="mstep"><h4><b>0${i+1}</b>${esc(x.title)}</h4><p>${md(x.text)}</p>${x.img&&i?`<img src="${src(x.img)}" alt="" loading="lazy">`:''}</div>`).join('')}
     <div class="mphones">${ph.slice(0,3).map(x=>`<img src="${src(x)}" alt="" loading="lazy">`).join('')}</div>
     <div class="counter"><b id="tcur">01</b> / 0${st.length}</div></div></section>`},
