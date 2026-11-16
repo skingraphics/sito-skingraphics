@@ -92,6 +92,7 @@ body.ondark-logo .wm img{filter:none}
 .hero-bg .glow.g3{width:38vmax;height:38vmax;margin:-19vmax 0 0 -19vmax;background:radial-gradient(circle,rgba(255,90,60,.55) 0%,rgba(255,90,60,0) 65%)}
 .hero-bg .vig{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 40%,rgba(0,0,0,.65) 100%)}
 .hero-bg .grain{position:absolute;inset:-50%;opacity:.09;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain .9s steps(4) infinite}
+.hero-off .hero-bg .grain,.hero-off .hint i{animation-play-state:paused}
 @keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-4%,3%)}50%{transform:translate(3%,-5%)}75%{transform:translate(-2%,-3%)}100%{transform:translate(4%,2%)}}
 #hero.dark .ticket,#hero.dark .hint{color:var(--fog);border-color:rgba(230,226,219,.5)}
 #hero.dark .ticket .tab{background:var(--ink);border-color:rgba(230,226,219,.5)}
@@ -340,13 +341,14 @@ video::-webkit-media-controls,video::-webkit-media-controls-start-playback-butto
 
 <script src="config.js"></script>
 <script src="seed.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
 <script>
 /* =================== DATI: Supabase, con fallback ai contenuti iniziali =================== */
 const CFG=window.SITO_CONFIG||{};
+// Three.js (~600 KB) serve solo per il logo 3D dell'apertura: lo carichiamo solo se l'hero lo usa
+let threeP=null;const loadThree=()=>threeP||(threeP=window.THREE?Promise.resolve():new Promise((ok,ko)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';s.onload=ok;s.onerror=ko;document.head.appendChild(s)}));
 async function loadContent(){
   const preview=new URLSearchParams(location.search).get('preview');
   if(preview){try{const d=JSON.parse(localStorage.getItem('sito_preview')||'null');if(d)return d}catch(e){}}
@@ -432,6 +434,7 @@ let S={},FX={};
 (async function boot(){
   const rows=await loadContent();const by={};rows.forEach(r=>by[r.key]=r);
   S=(by.settings||{}).data||{};window.__HERO=(by.hero||{}).data||{};FX=S.effects||{};applySettings(S);
+  {const h=window.__HERO,on=by.hero&&by.hero.enabled!==false;if(on&&FX.hero_3d!==false&&!(h.subject==='personaggio'&&h.character_img))loadThree().catch(()=>{})}
   const secs=rows.filter(r=>r.key!=='settings'&&r.key!=='footer'&&r.enabled!==false&&R[r.key]).sort((a,b)=>a.position-b.position);
   document.getElementById('main').innerHTML=secs.map(r=>(r.key==='product'&&(r.data||{}).layout==='tour'?R.product_tour:R[r.key])(r.data||{})).join('');
   renderFooter((by.footer||{}).data||{});
@@ -444,16 +447,20 @@ let S={},FX={};
 
 /* LINEE TOPOGRAFICHE ANIMATE (come Lando Norris) */
 function topoAnim(){
- const cv=document.getElementById('topo');if(!cv)return;
+ let cv=document.getElementById('topo');if(!cv)return;
  if(FX.topo_lines===false||FX.topo_animated===false){cv.remove();return}
  document.body.classList.add('topoanim');
- const ctx=cv.getContext('2d');const dpr=Math.min(devicePixelRatio||1,1.5);
+ const dpr=Math.min(devicePixelRatio||1,1.5);
  const cell=Math.max(14,Math.round(46-(+FX.topo_density||5)*4));   // densità 1-10
  const levels=10+Math.round((+FX.topo_density||5)*1.6);
  const speed=(FX.topo_speed==null?1:+FX.topo_speed);
  const alpha=Math.min(.5,Math.max(.02,(FX.topo_opacity==null?.12:+FX.topo_opacity)));
  let W,H,cols,rows,f;
- function size(){W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);cols=Math.ceil(W/cell)+2;rows=Math.ceil(H/cell)+2;f=new Float32Array(cols*rows)}
+ // Disegno delle linee: sulla scheda grafica (WebGL2) se c'è, altrimenti canvas 2D come prima.
+ // Il campo di rumore resta calcolato qui sotto (costa poco); la GPU traccia le stesse linee del marching squares.
+ let out=null;try{out=glOut()}catch(e){console.warn('topo: WebGL2 non usabile, uso il canvas 2D',e)}
+ if(!out){if(cv.__gl){const n=cv.cloneNode();cv.replaceWith(n);cv=n}out=cvOut()}
+ function size(){W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;cols=Math.ceil(W/cell)+2;rows=Math.ceil(H/cell)+2;f=new Float32Array(cols*rows);out.resize()}
  size();addEventListener('resize',size);
  // value noise 3D
  const P=new Uint8Array(512);{const p=[...Array(256).keys()];for(let i=255;i>0;i--){const j=Math.floor(Math.random()*(i+1));[p[i],p[j]]=[p[j],p[i]]}for(let i=0;i<512;i++)P[i]=p[i&255]}
@@ -469,6 +476,11 @@ function topoAnim(){
    let v=noise(i*cell*.0022,j*cell*.0022+sy,t)*.75+noise(i*cell*.006,j*cell*.006,t*1.7)*.25;
    const dx=x-mx,dy=y-my,d2=dx*dx+dy*dy;v+=Math.exp(-d2/26000)*.18;   // le linee si piegano attorno al mouse
    f[j*cols+i]=v}
+  out.draw()}
+ requestAnimationFrame(frame);
+
+ // --- disegno su canvas 2D (versione originale, usata solo se manca WebGL2) ---
+ function cvOut(){const ctx=cv.getContext('2d');return{resize(){ctx.setTransform(dpr,0,0,dpr,0,0)},draw(){
   ctx.clearRect(0,0,W,H);ctx.strokeStyle=`rgba(255,255,255,${alpha})`;ctx.lineWidth=1;ctx.beginPath();
   for(let L=1;L<levels;L++){const th=L/levels;
    for(let j=0;j<rows-1;j++)for(let i=0;i<cols-1;i++){
@@ -479,12 +491,59 @@ function topoAnim(){
     const seg=(p1,p2)=>{ctx.moveTo(p1[0],p1[1]);ctx.lineTo(p2[0],p2[1])};
     switch(k){case 1:case 14:seg(Lf,B);break;case 2:case 13:seg(B,R);break;case 3:case 12:seg(Lf,R);break;case 4:case 11:seg(T,R);break;
      case 5:seg(Lf,T);seg(B,R);break;case 6:case 9:seg(T,B);break;case 7:case 8:seg(Lf,T);break;case 10:seg(T,R);seg(Lf,B);break}}}
-  ctx.stroke()}
- requestAnimationFrame(frame);
+  ctx.stroke()}}}
+
+ // --- disegno su GPU (WebGL2): per ogni pixel, distanza dai segmenti del marching squares della sua cella ---
+ function glOut(){
+  const gl=cv.getContext('webgl2',{alpha:true,premultipliedAlpha:true,antialias:false,depth:false,stencil:false,powerPreference:'low-power'});if(!gl)return null;cv.__gl=true;
+  const FS=`#version 300 es
+precision highp float;precision highp int;
+uniform highp sampler2D F;uniform float cell,lev,alpha,sc,bh;uniform ivec2 lim;out vec4 o;
+float v(ivec2 c){return texelFetch(F,clamp(c,ivec2(0),lim),0).r;}
+float ds(vec2 p,vec2 a,vec2 b){vec2 pa=p-a,ba=b-a;float h=clamp(dot(pa,ba)/max(dot(ba,ba),1e-6),0.,1.);return length(pa-ba*h);}
+float cellD(ivec2 c,vec2 p){
+ if(c.x<0||c.y<0||c.x>=lim.x||c.y>=lim.y)return 1e3;
+ float a=v(c),b=v(c+ivec2(1,0)),cc=v(c+ivec2(1,1)),d=v(c+ivec2(0,1));
+ float lo=min(min(a,b),min(cc,d)),hi=max(max(a,b),max(cc,d));
+ int L0=max(1,int(floor(lo*lev))),L1=min(int(lev+.5)-1,int(ceil(hi*lev)));
+ vec2 x0=vec2(c)*cell;float m=1e3;
+ for(int L=L0;L<=L1;L++){float th=float(L)/lev;
+  int k=(a>th?8:0)|(b>th?4:0)|(cc>th?2:0)|(d>th?1:0);if(k==0||k==15)continue;
+  vec2 T=x0+vec2(cell*(th-a)/(b-a),0.),R=x0+vec2(cell,cell*(th-b)/(cc-b)),B=x0+vec2(cell*(th-d)/(cc-d),cell),Lf=x0+vec2(0.,cell*(th-a)/(d-a));
+  if(k==1||k==14)m=min(m,ds(p,Lf,B));else if(k==2||k==13)m=min(m,ds(p,B,R));else if(k==3||k==12)m=min(m,ds(p,Lf,R));else if(k==4||k==11)m=min(m,ds(p,T,R));
+  else if(k==5){m=min(m,ds(p,Lf,T));m=min(m,ds(p,B,R));}else if(k==6||k==9)m=min(m,ds(p,T,B));else if(k==7||k==8)m=min(m,ds(p,Lf,T));
+  else if(k==10){m=min(m,ds(p,T,R));m=min(m,ds(p,Lf,B));}}
+ return m;}
+void main(){vec2 p=vec2(gl_FragCoord.x,bh-gl_FragCoord.y)/sc;ivec2 c=ivec2(floor(p/cell));vec2 q=p-vec2(c)*cell;float e=1.5/sc+.5;
+ float m=cellD(c,p);int sx=q.x<e?-1:(q.x>cell-e?1:0),sy=q.y<e?-1:(q.y>cell-e?1:0);
+ if(sx!=0)m=min(m,cellD(c+ivec2(sx,0),p));if(sy!=0)m=min(m,cellD(c+ivec2(0,sy),p));if(sx!=0&&sy!=0)m=min(m,cellD(c+ivec2(sx,sy),p));
+ float a=alpha*clamp(.5*sc+.5-m*sc,0.,1.);o=vec4(a,a,a,a);}`;
+  const sh=(t,s)=>{const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);if(!gl.getShaderParameter(o,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(o));return o};
+  let U,lost=false;
+  function setup(){
+   const pr=gl.createProgram();
+   gl.attachShader(pr,sh(gl.VERTEX_SHADER,`#version 300 es
+void main(){gl_Position=vec4(gl_VertexID==1?3.:-1.,gl_VertexID==2?3.:-1.,0.,1.);}`));
+   gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,FS));gl.linkProgram(pr);if(!gl.getProgramParameter(pr,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(pr));
+   gl.useProgram(pr);U={};['F','cell','lev','alpha','sc','bh','lim'].forEach(n=>U[n]=gl.getUniformLocation(pr,n));
+   gl.bindTexture(gl.TEXTURE_2D,gl.createTexture());
+   [gl.TEXTURE_MIN_FILTER,gl.TEXTURE_MAG_FILTER].forEach(p=>gl.texParameteri(gl.TEXTURE_2D,p,gl.NEAREST));
+   [gl.TEXTURE_WRAP_S,gl.TEXTURE_WRAP_T].forEach(p=>gl.texParameteri(gl.TEXTURE_2D,p,gl.CLAMP_TO_EDGE));
+   gl.pixelStorei(gl.UNPACK_ALIGNMENT,1);gl.uniform1i(U.F,0);gl.clearColor(0,0,0,0)}
+  function resize(){if(lost)return;gl.viewport(0,0,cv.width,cv.height);
+   gl.texImage2D(gl.TEXTURE_2D,0,gl.R32F,cols,rows,0,gl.RED,gl.FLOAT,f);
+   gl.uniform1f(U.cell,cell);gl.uniform1f(U.lev,levels);gl.uniform1f(U.alpha,alpha);gl.uniform1f(U.sc,cv.width/W);gl.uniform1f(U.bh,cv.height);gl.uniform2i(U.lim,cols-1,rows-1)}
+  setup();
+  cv.addEventListener('webglcontextlost',e=>{e.preventDefault();lost=true});
+  cv.addEventListener('webglcontextrestored',()=>{lost=false;try{setup();resize()}catch(e){lost=true}});
+  return{resize,draw(){if(lost)return;gl.texSubImage2D(gl.TEXTURE_2D,0,0,0,cols,rows,gl.RED,gl.FLOAT,f);gl.clear(gl.COLOR_BUFFER_BIT);gl.drawArrays(gl.TRIANGLES,0,3)}}}
 }
 
 function autoplayVideos(){const vs=[...document.querySelectorAll('video')];vs.forEach(v=>{v.muted=true;v.defaultMuted=true;v.playsInline=true;v.setAttribute('muted','');v.setAttribute('playsinline','');v.setAttribute('webkit-playsinline','');v.removeAttribute('controls');const p=v.play();p&&p.catch(()=>{})});
- const kick=()=>vs.forEach(v=>{if(v.paused){const p=v.play();p&&p.catch(()=>{})}});['touchstart','click','scroll'].forEach(ev=>addEventListener(ev,kick,{once:true,passive:true}));
+ // i video girano solo quando sono (quasi) a schermo: fuori schermo vengono messi in pausa, così il browser non li decodifica a vuoto
+ const vis=new Set(vs);
+ if('IntersectionObserver' in window){vis.clear();const io=new IntersectionObserver(es=>es.forEach(e=>{const v=e.target;if(e.isIntersecting){vis.add(v);if(v.paused){const p=v.play();p&&p.catch(()=>{})}}else{vis.delete(v);v.pause()}}),{rootMargin:'200px 0px'});vs.forEach(v=>io.observe(v))}
+ const kick=()=>vs.forEach(v=>{if(v.paused&&vis.has(v)){const p=v.play();p&&p.catch(()=>{})}});['touchstart','click','scroll'].forEach(ev=>addEventListener(ev,kick,{once:true,passive:true}));
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)kick()})}
 
 function signSVG(d){
@@ -523,11 +582,14 @@ function syncTheme(){if(menuOpen)return;const y=60;let light=false;
  for(const sec of document.querySelectorAll('#main>section,#main>.pin-spacer>section,footer')){const r=sec.getBoundingClientRect();if(r.top<=y&&r.bottom>y){
   if(sec.id==='hero')light=heroLight&&r.top>-innerHeight*.3;else if(sec.tagName==='FOOTER'){const fp=sec.querySelector('.fpanel');light=!(fp&&fp.getBoundingClientRect().top<=y)}else light=isLight(sec)||!!sec.querySelector('[data-light="1"]')||sec.dataset.light==='1';break}}
  if(light!==lastLight){lastLight=light;theme(light)}}
-addEventListener('scroll',()=>requestAnimationFrame(syncTheme),{passive:true});gsap.ticker.add(()=>{if(lenis)syncTheme()});
+addEventListener('scroll',()=>requestAnimationFrame(syncTheme),{passive:true});
+// con Lenis il controllo gira solo mentre la pagina si muove (e per 1,5 s dopo, finché le animazioni "scrub" si assestano):
+// a pagina ferma non forza più il ricalcolo del layout a ogni fotogramma
+{let lastY=-1,until=0;gsap.ticker.add(()=>{if(!lenis)return;const y=lenis.scroll,now=performance.now();if(y!==lastY){lastY=y;until=now+1500}if(now<until)syncTheme()})}
 
 /* HERO 3D */
 const H={active:true};
-if($('#bang')&&FX.hero_3d!==false&&window.THREE)(function(){
+if($('#bang')&&FX.hero_3d!==false)loadThree().then(function(){if(!window.THREE)return;
  const cv=$('#bang');const r=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});
  r.setPixelRatio(Math.min(devicePixelRatio,2));r.outputEncoding=THREE.sRGBEncoding;r.toneMapping=THREE.ACESFilmicToneMapping;
  const scene=new THREE.Scene();const cam=new THREE.PerspectiveCamera(30,1,.1,100);cam.position.set(0,0,13);
@@ -552,7 +614,7 @@ if($('#bang')&&FX.hero_3d!==false&&window.THREE)(function(){
  tl.to(wmat,{opacity:0,duration:.8},'-=.4');
  let mx=0,my=0;addEventListener('pointermove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5});
  (function loop(t){requestAnimationFrame(loop);if(!H.active)return;root.rotation.y+=((mx*.9+Math.sin((t||0)/2500)*.25)-root.rotation.y)*.06;root.rotation.x+=((my*.4)-root.rotation.x)*.06;r.render(scene,cam)})();
-})();
+}).catch(e=>console.warn('3D non caricato',e));
 
 /* PERSONAGGIO → CODICE: sotto il mouse l'immagine si trasforma in codice */
 if($('#hchar'))(function(){const coarse=matchMedia('(hover:none),(pointer:coarse)').matches;
@@ -617,7 +679,7 @@ if($('#heroBg')){
 if($('#hero')){
  const sps=[...document.querySelectorAll('#sign .sp, #sign .mk')];const lens=sps.map(p=>p.getTotalLength?p.getTotalLength():300);const TL=lens.reduce((a,b)=>a+b,0)||1;sps.forEach((p,k)=>{p.style.strokeDasharray=lens[k]+' '+(lens[k]+60);p.style.strokeDashoffset=FX.signature_draw===false?0:lens[k]+14});if(FX.signature_draw===false)$('#sign').style.display='none';
  const ht=gsap.timeline({scrollTrigger:{trigger:'#hero',start:'top top',end:'+='+(Math.max(+FX.hero_scroll_length||0,4600)),pin:true,scrub:1.2,snap:FX.scroll_snap===false?false:{snapTo:'labelsDirectional',duration:{min:.5,max:1.2},delay:.12,ease:'power2.inOut'},
-  onUpdate:s=>{H.active=s.progress<.74;$('#monoLbl').style.opacity=s.progress>.25&&s.progress<.66?1:0}}});
+  onUpdate:s=>{const a=s.progress<.74;if(a!==H.active)document.body.classList.toggle('hero-off',!a);H.active=a;$('#monoLbl').style.opacity=s.progress>.25&&s.progress<.66?1:0}}});
  ht.addLabel('inizio',0).addLabel('card',1.3).addLabel('firma',3.5).addLabel('testo',4.9);
  ht.to('#heroCard',{clipPath:mobile?'inset(24% 10% 24% 10%)':'inset(24% 32% 24% 32%)',duration:1.2,ease:LE},0)
   .to('.ticket,.hint,.corner,.slogan',{opacity:0,duration:.3},0).to('#mqw',{opacity:1,duration:.4},.5)
