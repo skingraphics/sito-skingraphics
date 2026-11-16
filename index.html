@@ -675,11 +675,11 @@ if($('#stage')&&$('.tour'))(function(){const sec=$('.tour'),shots=[...document.q
  const st=$('#stage');st.addEventListener('mousemove',e=>{const r=st.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;st.style.setProperty('--gx',x*100+'%');st.style.setProperty('--gy',y*100+'%');gsap.to('#bw',{rotateY:-8+(x-.5)*10,rotateX:4-(y-.5)*8,duration:.8,ease:'power2.out',overwrite:'auto'})});
  const setStep=i=>{lis.forEach((l,j)=>l.classList.toggle('on',j===i));if(cur)cur.textContent='0'+(i+1)};
  const tl=gsap.timeline({defaults:{ease:'none'},scrollTrigger:{trigger:sec,start:'top top',end:()=>'+='+innerHeight*(n-.2)*1.1,pin:true,scrub:1,invalidateOnRefresh:true,snap:{snapTo:'labels',duration:{min:.25,max:.7},delay:.08,ease:'power2.inOut'},
-  onUpdate:self=>{const t=Math.min(n-1,tl.time());const i=Math.min(n-1,Math.round(t));setStep(i);lis.forEach((l,j)=>l.style.setProperty('--p',Math.max(0,Math.min(1,t-j+1))*100+'%'))}}});
+  onUpdate:self=>{const t=Math.min(n-1,self.progress*(n-1));const i=Math.min(n-1,Math.round(t));setStep(i);lis.forEach((l,j)=>l.style.setProperty('--p',Math.max(0,Math.min(1,t-j+1))*100+'%'))}}});
  tl.addLabel('s0',0);
  for(let i=1;i<n;i++){const a=shots[i-1],b=shots[i];
-  if(b){tl.fromTo(b,{clipPath:'inset(100% 0 0 0)',scale:1.06},{clipPath:'inset(0% 0 0 0)',scale:1,duration:1,ease:'power2.inOut'},i-1);if(a)tl.to(a,{scale:.94,filter:'brightness(.45)',duration:1,ease:'power2.inOut'},i-1)}
-  else{const last=shots[shots.length-1];if(last)tl.to(last,{filter:'brightness(.3) blur(2px)',duration:1},i-1);tl.to(phones,{opacity:1,y:0,duration:.7,stagger:.15,ease:'power3.out'},i-1)}
+  if(b){tl.fromTo(b,{clipPath:'inset(100% 0 0 0)',scale:1.06},{clipPath:'inset(0% 0 0 0)',scale:1,duration:1,ease:'power2.inOut'},i-1);if(a)tl.fromTo(a,{scale:1,filter:'brightness(1) blur(0px)'},{scale:.94,filter:'brightness(.45) blur(0px)',duration:1,ease:'power2.inOut',immediateRender:false},i-1)}
+  else{const last=shots[shots.length-1];if(last)tl.fromTo(last,{filter:'brightness(1) blur(0px)'},{filter:'brightness(.3) blur(2px)',duration:1,immediateRender:false},i-1);tl.to(phones,{opacity:1,y:0,duration:.7,stagger:.15,ease:'power3.out'},i-1)}
   tl.addLabel('s'+i,i)}
  addEventListener('load',()=>ScrollTrigger.refresh());const mph=$('#mph'),strip=$('#strip');if(mph){const pos=[{xPercent:0,yPercent:0,rotation:-6},{xPercent:400,yPercent:-8,rotation:6},{xPercent:190,yPercent:6,rotation:0}];
   for(let i=1;i<n;i++){if(i<n-1||shots[i])tl.to(mph,{...(pos[i]||pos[i%3]),duration:1,ease:'power2.inOut'},i-1);else tl.to(mph,{opacity:0,yPercent:40,duration:.6,ease:'power2.in'},i-1)}
