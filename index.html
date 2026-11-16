@@ -400,7 +400,7 @@ function renderFooter(d){
    ${d.portrait?`<div class="fport"><img src="${src(d.portrait)}" alt=""></div>`:''}
    <div><h6>${esc(d.contact_title)}</h6><a href="tel:${esc((d.phone||'').replace(/\s/g,''))}">${esc(d.phone)}</a><a href="mailto:${esc(d.email)}" style="font-size:20px;text-transform:none">${esc(d.email)}</a>
    <h6 style="margin-top:20px">Social</h6>${(d.socials||[]).map(s=>`<a href="${esc(s.href)}" target="_blank" rel="noopener">${esc(s.label)}</a>`).join('')}</div></div>
-   <div class="flegal"><span>${esc(d.legal)}</span><span>Privacy · Cookie</span><span>${esc(d.copyright)}</span></div></div>`;
+   <div class="flegal"><span>${esc(d.legal)}</span><span><a href="/privacy">Privacy Policy</a> · <a href="/cookie-policy">Cookie Policy</a></span><span>${esc(d.copyright)}</span></div></div>`;
 }
 function applySettings(s){
   const root=document.documentElement.style;Object.entries(s.colors||{}).forEach(([k,v])=>root.setProperty('--'+k,v));
