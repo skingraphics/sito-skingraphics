@@ -204,6 +204,10 @@ body.ondark-logo .wm img{filter:none}
 .brush{position:absolute;left:0;right:0;top:calc(18vh + 20px);text-align:center;font-family:var(--brush),cursive;font-size:clamp(110px,15vw,250px);color:var(--red);white-space:nowrap;z-index:1;line-height:1;opacity:.9;transform:rotate(-5deg)}
 .logos{position:relative;z-index:2;margin-top:clamp(200px,30vh,320px);max-width:1400px;margin-left:auto;margin-right:auto;display:flex;justify-content:space-around;align-items:center;padding:0 4vw;gap:20px;flex-wrap:wrap}
 .logos span{height:51px;min-width:120px;border:1px dashed rgba(22,22,22,.35);display:flex;align-items:center;justify-content:center;padding:0 16px}
+.logos.has-img{display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(34px,5vw,64px) clamp(20px,3vw,48px);align-items:center;justify-items:center;max-width:1240px}
+.logos.has-img span{border:0;height:auto;min-width:0;padding:0}
+.logos.has-img span img{max-height:none;width:var(--w);height:auto;max-width:100%;transition:transform .45s cubic-bezier(.2,.7,.2,1),filter .45s}
+.logos.has-img span:hover img{transform:scale(1.08);filter:brightness(0) saturate(100%) invert(18%) sepia(95%) saturate(5000%) hue-rotate(352deg) brightness(.95)}
 /* ---------- social ---------- */
 .social{padding:16vh 4vw 22vh;text-align:center;overflow:hidden}
 .social .t{font-variation-settings:"wdth" var(--wdth,93);font-weight:750;font-size:clamp(46px,4.6vw,67px);letter-spacing:-1.85px;text-transform:uppercase;line-height:1}
@@ -253,6 +257,8 @@ video::-webkit-media-controls,video::-webkit-media-controls-start-playback-butto
  .partners{padding:12vh 0 12vh}.partners .t{font-size:clamp(34px,10vw,52px);padding:0 6vw}
  .brush{top:calc(12vh + 70px);font-size:clamp(84px,26vw,140px)}
  .logos{margin-top:200px;display:grid;grid-template-columns:1fr 1fr;justify-items:center;gap:14px}
+ .logos.has-img{grid-template-columns:repeat(3,1fr);gap:34px 18px;padding:0 6vw}
+ .logos.has-img span img{width:calc(var(--w) * .62)}
  .social .t{font-size:clamp(34px,10vw,52px);letter-spacing:-1px}
  .fpanel{padding:10vh 6vw 4vh;clip-path:polygon(0 24px,30% 24px,34% 0,66% 0,70% 24px,100% 24px,100% 100%,0 100%)}
  .fpanel .big{font-size:clamp(40px,12vw,64px);letter-spacing:-1.5px}
@@ -329,7 +335,7 @@ const R={
    ${d.cta_label?`<div><a class="abtn" href="${esc(d.cta_link)}">${esc(d.cta_label)}</a></div>`:''}</div>
    <div class="collage" id="collage">${im.slice(0,6).map((x,i)=>`<img class="c${i+1}" src="${src(x)}" alt="" loading="lazy">`).join('')}${d.show_wheel?'<div class="wheel" id="wheel"></div>':''}</div></section>`},
  partners:d=>`<section class="partners cream topoL"><div class="brush" id="brush">${esc(d.brush)}</div><div class="t">${md(d.title)}</div>
-   <div class="logos cap">${(d.logos||[]).map(l=>`<span>${l.img?`<img src="${src(l.img)}" alt="${esc(l.name)}">`:esc(l.name)}</span>`).join('')}</div></section>`,
+   <div class="logos cap${(d.logos||[]).some(l=>l.img)?' has-img':''}">${(d.logos||[]).map(l=>{const r=+l.ratio||3,w=Math.min(190,Math.round(Math.sqrt(5200*r)));return `<span>${l.img?`<img src="${src(l.img)}" alt="${esc(l.name)}" loading="lazy" style="--w:${w}px">`:esc(l.name)}</span>`}).join('')}</div></section>`,
  social:d=>`<section class="social cream topoL"><div class="t">${md(d.title)}</div><div class="deck" id="deck">${(d.cards||[]).map(c=>`<div class="dc"><img src="${src(c.img)}" alt=""><div class="who">${esc(c.caption)}</div></div>`).join('')}</div></section>`
 };
 const MENU={hero:'Home',manifesto:'Chi siamo',story:'Team',gioco:'Servizi',hof:'Lavori',product:'SKIN CMS',social:'Social'};
