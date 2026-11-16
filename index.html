@@ -379,17 +379,17 @@ const R={
  hof:d=>{const it=d.items||[];const cols=[[],[],[],[]];it.forEach((x,i)=>cols[i%4].push(x));
    return `<section class="hof" id="hof"><div class="head"><div class="cap" style="margin-bottom:18px;color:var(--lichen)">${esc(d.eyebrow)}</div><div class="t">${md(d.title)}</div></div>
    <div class="hgrid">${cols.map(c=>`<div class="col">${c.map(x=>`<div class="hc"><img src="${src(x.img)}" alt=""><span class="lbl">${esc(x.label)}<b>${esc(x.year)}</b></span></div>`).join('')}</div>`).join('')}</div>
-   ${d.cta_label?`<div class="cta-strip"><a class="abtn" href="${esc(d.cta_link)}">${esc(d.cta_label)}</a></div>`:''}</section>`},
+   ${d.cta_label?`<div class="cta-strip"><a class="abtn" href="${esc(d.cta_link)}"${/^https?:/.test(d.cta_link||'')?' target="_blank" rel="noopener"':''}>${esc(d.cta_label)}</a></div>`:''}</section>`},
  product:d=>{const im=d.images||[];return `<section class="product cream topoL" id="skincms"><div class="txt">
    <div class="eb"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>${esc(d.eyebrow)}</div>
    <div class="t1">${esc(d.title1)}</div><div class="t2">${esc(d.title2)}</div><p>${md(d.text)}</p>
-   ${d.cta_label?`<div><a class="abtn" href="${esc(d.cta_link)}">${esc(d.cta_label)}</a></div>`:''}</div>
+   ${d.cta_label?`<div><a class="abtn" href="${esc(d.cta_link)}"${/^https?:/.test(d.cta_link||'')?' target="_blank" rel="noopener"':''}>${esc(d.cta_label)}</a></div>`:''}</div>
    <div class="collage" id="collage">${im.slice(0,6).map((x,i)=>`<img class="c${i+1}" src="${src(x)}" alt="" loading="lazy">`).join('')}${d.show_wheel?'<div class="wheel" id="wheel"></div>':''}</div></section>`},
  product_tour:d=>{const st=d.steps||[],ph=d.phones||[];return `<section class="product tour cream topoL" id="skincms"><div class="txt">
    <div class="eb"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>${esc(d.eyebrow)}</div>
    <div class="t1">${esc(d.title1)}</div><div class="t2">${esc(d.title2)}</div><p>${md(d.text)}</p>
    <ol class="steps">${st.map((x,i)=>`<li data-i="${i}" class="${i?'':'on'}"><h4>${esc(x.title)}</h4><div class="d"><span>${md(x.text)}</span></div></li>`).join('')}</ol>
-   ${d.cta_label?`<div><a class="abtn" href="${esc(d.cta_link)}">${esc(d.cta_label)}</a></div>`:''}</div>
+   ${d.cta_label?`<div><a class="abtn" href="${esc(d.cta_link)}"${/^https?:/.test(d.cta_link||'')?' target="_blank" rel="noopener"':''}>${esc(d.cta_label)}</a></div>`:''}</div>
    <div class="stage" id="stage"><div class="bw" id="bw"><div class="bar"><i></i><i></i><i></i><div class="url">${esc(d.url||'skincms.it')}</div></div>
     <div class="scr">${st.filter(x=>x.img).map(x=>`<img src="${src(x.img)}" alt="${esc(x.title)}">`).join('')}
     <div class="phones">${ph.slice(0,3).map(x=>`<img src="${src(x)}" alt="">`).join('')}</div></div></div>
