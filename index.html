@@ -185,8 +185,16 @@ body.ondark-logo .wm img{filter:none}
 .product .t2{font-family:var(--serif);font-weight:600;font-style:italic;font-size:clamp(56px,6.5vw,104px);line-height:.95;letter-spacing:-1px;color:var(--red)}
 .product p{max-width:440px;margin:28px 0 30px}
 .collage{position:relative;overflow:hidden;background:var(--void)}
-.collage img{position:absolute;object-fit:cover;will-change:transform}
-.collage .c1{left:6%;top:8%;width:54%;height:58%}.collage .c2{right:6%;top:22%;width:36%;height:44%}.collage .c3{left:22%;bottom:6%;width:44%;height:28%}
+.collage{min-height:100vh;background:radial-gradient(ellipse at 60% 40%,#2a0608 0%,var(--void) 70%)}
+.collage img{position:absolute;height:auto;will-change:transform;border-radius:12px;box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08)}
+.collage .c1{left:5%;top:7%;width:72%}
+.collage .c2{right:4%;top:36%;width:64%}
+.collage .c3{left:3%;bottom:7%;width:46%}
+.collage .c4,.collage .c5{width:17%;border-radius:22px;box-shadow:0 30px 70px rgba(0,0,0,.7),0 0 0 5px #111,0 0 0 6px rgba(255,255,255,.15)}
+.collage .c4{right:6%;bottom:5%;transform:rotate(4deg)}
+.collage .c5{right:25%;bottom:9%;transform:rotate(-5deg)}
+.collage .c6{left:2%;top:40%;width:22%;border-radius:16px}
+@media (max-width:900px){.collage{min-height:0;height:115vw}.collage .c4,.collage .c5{width:26%;border-radius:14px}.collage .c6{width:30%}}
 .wheel{position:absolute;right:10%;bottom:8%;width:28%;aspect-ratio:1;border-radius:50%;border:3px solid var(--cream);background:conic-gradient(var(--red) 0 45deg,#111 45deg 90deg,var(--red) 90deg 135deg,#111 135deg 180deg,var(--red) 180deg 225deg,#111 225deg 270deg,var(--red) 270deg 315deg,#111 315deg 360deg)}
 @media (max-width:900px){.product{grid-template-columns:1fr}.collage{height:80vh}}
 /* ---------- partner ---------- */
@@ -319,7 +327,7 @@ const R={
    <div class="eb"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>${esc(d.eyebrow)}</div>
    <div class="t1">${esc(d.title1)}</div><div class="t2">${esc(d.title2)}</div><p>${md(d.text)}</p>
    ${d.cta_label?`<div><a class="abtn" href="${esc(d.cta_link)}">${esc(d.cta_label)}</a></div>`:''}</div>
-   <div class="collage" id="collage">${im[0]?`<img class="c1" src="${src(im[0])}" alt="">`:''}${im[1]?`<img class="c2" src="${src(im[1])}" alt="">`:''}${im[2]?`<img class="c3" src="${src(im[2])}" alt="">`:''}${d.show_wheel?'<div class="wheel" id="wheel"></div>':''}</div></section>`},
+   <div class="collage" id="collage">${im.slice(0,6).map((x,i)=>`<img class="c${i+1}" src="${src(x)}" alt="" loading="lazy">`).join('')}${d.show_wheel?'<div class="wheel" id="wheel"></div>':''}</div></section>`},
  partners:d=>`<section class="partners cream topoL"><div class="brush" id="brush">${esc(d.brush)}</div><div class="t">${md(d.title)}</div>
    <div class="logos cap">${(d.logos||[]).map(l=>`<span>${l.img?`<img src="${src(l.img)}" alt="${esc(l.name)}">`:esc(l.name)}</span>`).join('')}</div></section>`,
  social:d=>`<section class="social cream topoL"><div class="t">${md(d.title)}</div><div class="deck" id="deck">${(d.cards||[]).map(c=>`<div class="dc"><img src="${src(c.img)}" alt=""><div class="who">${esc(c.caption)}</div></div>`).join('')}</div></section>`
@@ -586,7 +594,7 @@ if($('#fbImg')){gsap.fromTo('#fbImg',{yPercent:-8,scale:1.15},{yPercent:8,scale:
 if($('.hgrid')){gsap.utils.toArray('.hgrid .col').forEach((c,i)=>gsap.fromTo(c,{y:120+i*40},{y:-40-i*30,ease:'none',scrollTrigger:{trigger:'.hgrid',start:'top bottom',end:'bottom top',scrub:true}}));
  gsap.from('.hc',{opacity:0,clipPath:'polygon(0 0,100% 0,100% 0,100% 0,0 0)',stagger:.08,duration:.9,ease:LE,scrollTrigger:{trigger:'.hgrid',start:'top 80%'}})}
 /* PRODOTTO */
-if($('#collage')){[['.c1',-10],['.c2',14],['.c3',-18]].forEach(([s,v])=>{if($('.collage '+s))gsap.fromTo('.collage '+s,{yPercent:v},{yPercent:-v,ease:'none',scrollTrigger:{trigger:'#collage',start:'top bottom',end:'bottom top',scrub:true}})});
+if($('#collage')){[['.c1',-6],['.c2',8],['.c3',-10],['.c4',16],['.c5',22],['.c6',-14]].forEach(([s,v])=>{if($('.collage '+s))gsap.fromTo('.collage '+s,{yPercent:v},{yPercent:-v,ease:'none',scrollTrigger:{trigger:'#collage',start:'top bottom',end:'bottom top',scrub:true}})});
  if($('#wheel')&&FX.wheel_spin!==false)gsap.to('#wheel',{rotate:1440+60,duration:4,ease:'power4.out',scrollTrigger:{trigger:'#collage',start:'top 50%'}});
  gsap.from('.product .txt>*',{y:60,opacity:0,stagger:.1,duration:.75,ease:LE,scrollTrigger:{trigger:'.product',start:'top 60%'}})}
 /* PARTNER */
