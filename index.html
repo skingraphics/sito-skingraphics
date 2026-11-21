@@ -171,7 +171,7 @@ body.ondark-logo .wm img{filter:none}
 .hc{position:relative;border:1px solid var(--tarmac);aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;background:var(--void);clip-path:polygon(0 0,100% 0,100% calc(100% - 46px),calc(100% - 46px) 100%,0 100%)}
 .hc img{width:80%;mix-blend-mode:lighten;transition:transform 1s var(--ease)}
 .hc:hover img{transform:scale(1.08) rotate(-3deg)}
-.hc.full{overflow:hidden}.hc.full img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;mix-blend-mode:normal}.hc.full:hover img{transform:scale(1.05)}
+.hc.full{overflow:hidden}.hc.full img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;mix-blend-mode:normal}.hc.full img{transform-origin:50% 100%}.hc.full:hover img{transform:scale(1.04)}
 .hc.full::after{content:"";position:absolute;left:0;right:0;bottom:0;height:22%;background:linear-gradient(transparent,rgba(0,0,0,.85));pointer-events:none}.hc.full .lbl{z-index:2}
 .hc .lbl{position:absolute;left:14px;bottom:12px;font-size:13.3px;font-weight:600;color:var(--cream)}
 .hc .lbl b{color:var(--red);font-weight:700;margin-left:6px}
@@ -387,7 +387,7 @@ async function loadContent(){
 }
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const md=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\*(.+?)\*/g,'<span class="serif">$1</span>');
-const src=u=>esc(u&&/^img\//.test(u)&&!u.includes('?')?u+'?v=5':(u||''));
+const src=u=>esc(u&&/^img\//.test(u)&&!u.includes('?')?u+'?v=6':(u||''));
 
 /* =================== RENDER SEZIONI =================== */
 const R={
