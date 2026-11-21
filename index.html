@@ -387,7 +387,7 @@ async function loadContent(){
 }
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const md=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\*(.+?)\*/g,'<span class="serif">$1</span>');
-const src=u=>esc(u&&/^img\//.test(u)&&!u.includes('?')?u+'?v=7':(u||''));
+const src=u=>esc(u&&/^img\//.test(u)&&!u.includes('?')?u+'?v=8':(u||''));
 
 /* =================== RENDER SEZIONI =================== */
 const R={
